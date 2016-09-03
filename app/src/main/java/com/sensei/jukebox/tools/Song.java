@@ -102,7 +102,7 @@ public class Song {
     }
 
     public static Song unwrapSong( Bundle bundle, Context context ) {
-        return new Song( bundle.getLong( Constants.SONG_ID ), context );
+        return new Song( bundle.getLong( Constants.SONG_ID ), context, bundle.getString( Constants.SONG_TITLE ) );
     }
 
     public static Bundle bundleSong( Song song ) {
