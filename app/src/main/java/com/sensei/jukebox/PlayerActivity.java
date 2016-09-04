@@ -30,7 +30,6 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnP
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_player);
         retrieveIntent();
         setUpUI();
 
@@ -57,14 +56,24 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnP
     }
 
     public void setUpUI() {
+
+        if( getResources().getDisplayMetrics().density <= 1.5 ) {
+            setContentView(R.layout.activity_player);
+        }
+        else {
+            setContentView(R.layout.activity_player_xhdpi);
+        }
+
         ImageView artwork = (ImageView)findViewById( R.id.albumArt );
         TextView album = (TextView)findViewById( R.id.album );
         TextView title = (TextView)findViewById( R.id.title );
         TextView artist = (TextView)findViewById( R.id.artist );
+        TextView genre = (TextView)findViewById( R.id.genre );
 
         album.setText ( song.getAlbum() );
         title.setText ( song.toString() );
         artist.setText( song.getArtist() );
+        genre.setText( song.getGenre() );
 
         if( song.getAlbumArt() == null ) {
             artwork.setImageResource( R.drawable.no_album_art_icon );
