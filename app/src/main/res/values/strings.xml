@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Jukebox</string>
+    <string name="album_artwork">album artwork</string>
 </resources>

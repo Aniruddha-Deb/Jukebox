@@ -14,7 +14,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:text="Album name"
         android:id="@+id/album"
         android:layout_gravity="center"/>
 
@@ -26,6 +25,7 @@
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:layout_gravity="center"
+        android:contentDescription="@string/album_artwork"
         android:id="@+id/albumArt"/>
 
     <Space
@@ -35,7 +35,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="30sp"
+        android:textSize="25sp"
         android:id="@+id/title"
         android:layout_gravity="center"/>
 
@@ -46,14 +46,13 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:id="@+id/artist"
         android:layout_gravity="center"/>
 
     <Space
-        android:layout_width="wrap_content"
-        android:layout_height="20dp" />
-
-
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:id="@+id/media_controller_view"/>
 
 </LinearLayout>
