@@ -15,7 +15,7 @@ Upon clicking a song, it reads and displays the song's tag data and plays the so
 
 ## Installation
 
-Download the build.apk file in the releases tab and install on your android smartphone. After installation, run the app by tapping on it from your desktop. 
+Download the [build.apk](https://github.com/Aniruddha-Deb/Jukebox/releases/download/v0.0-indev/build.apk) file and install on your android smartphone. After installation, run the app by tapping on it from your desktop. 
 
 ## Bugs
 
