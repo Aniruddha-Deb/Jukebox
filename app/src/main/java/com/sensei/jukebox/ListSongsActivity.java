@@ -42,7 +42,7 @@ public class ListSongsActivity extends ListActivity {
     }
 
     private ArrayList<Song> getSongs() {
-        ArrayList<Song> songs = new ArrayList<Song>();
+        ArrayList<Song> songs = new ArrayList<>();
 
         ContentResolver resolver = getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
@@ -60,7 +60,9 @@ public class ListSongsActivity extends ListActivity {
             }
         }
 
-        cursor.close();
+        if (cursor != null) {
+            cursor.close();
+        }
 
         return songs;
     }

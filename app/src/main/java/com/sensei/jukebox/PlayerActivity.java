@@ -21,9 +21,6 @@ public class PlayerActivity extends AppCompatActivity {
 
     private Song song;
 
-    private ImageView artwork;
-    private TextView album, title, artist;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,10 +36,10 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     public void setUpUI() {
-        artwork = (ImageView)findViewById( R.id.albumArt );
-        album = (TextView)findViewById( R.id.album );
-        title = (TextView)findViewById( R.id.title );
-        artist = (TextView)findViewById( R.id.artist );
+        ImageView artwork = (ImageView)findViewById( R.id.albumArt );
+        TextView album = (TextView)findViewById( R.id.album );
+        TextView title = (TextView)findViewById( R.id.title );
+        TextView artist = (TextView)findViewById( R.id.artist );
 
         album.setText ( song.getAlbum() );
         title.setText ( song.toString() );

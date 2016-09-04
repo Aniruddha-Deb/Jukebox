@@ -2,20 +2,12 @@ package com.sensei.jukebox.tools;
 
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
-import android.media.MediaDataSource;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
 import com.sensei.jukebox.Constants;
-import com.sensei.jukebox.ListSongsActivity;
-
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.IOException;
-import java.util.HashMap;
 
 public class Song {
 
@@ -23,8 +15,6 @@ public class Song {
 
     private long id = 0;
     private Uri location = null;
-    private File file = null;
-    private String fileLocation = null;
 
     private String title = null;
     private String artist = null;
@@ -33,13 +23,6 @@ public class Song {
     private byte[] albumArt = null;
 
     MediaMetadataRetriever retriever = null;
-
-    public Song(long id, Context context) {
-        this.id = id;
-        this.context = context;
-
-        getSongData();
-    }
 
     public Song( long id, Context context, String title ) {
         this.id = id;
@@ -74,8 +57,6 @@ public class Song {
 
     private void initFileLocation() {
         location = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id );
-        file = new File( location.toString() );
-        fileLocation = file.getAbsolutePath();
     }
 
     private void retrieveData() throws Exception{
