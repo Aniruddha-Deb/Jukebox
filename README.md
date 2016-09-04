@@ -19,9 +19,8 @@ Download the [build.apk](https://github.com/Aniruddha-Deb/Jukebox/releases/downl
 
 ## Bugs
 
-It is still a broken mess, so the bugs are many (tapping on mulitple songs runs them both together) but will be fixed in upcoming builds
+Most bugs have been fixed but a few asssociated with the application's state and mediaPlayer remain. They will be fixed in the upcoming builds.
 
 ## TODOs
 
-Foremost priority is to create a mediaController and control the mediaPlayer class playing the song. This will also introduce features such as play, pause, fast-forward, rewind, seek etc. Also need to fix a lot of bugs associated with the playerActivity. 
-
+Make a suitable MediaController that doesn't disappear every 3 seconds and improve the bland UI. Also need to make a service which plays the music when the activity is stopped and the screen is locked.
