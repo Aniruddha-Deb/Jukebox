@@ -71,42 +71,59 @@
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="10dp" />
+        android:layout_height="15dp" />
 
     <GridLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center">
 
-        <Button
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:text="ii"
-            android:onClick="pause"/>
+        <ImageButton
+            android:layout_width="75dp"
+            android:layout_height="50dp"
+            android:scaleX="0.50"
+            android:scaleY="0.50"
+            android:src="@drawable/previous"
+            android:background="@color/background"
+            android:onClick="previousSong"/>
 
-        <Button
-            android:layout_width="60dp"
-            android:layout_height="40dp"
-            android:text="▶▶"
-            android:onClick="fastForward"/>
-
-        <Button
-            android:layout_width="60dp"
-            android:layout_height="40dp"
-            android:text="◀◀"
+        <ImageButton
+            android:layout_width="75dp"
+            android:layout_height="50dp"
+            android:scaleX="0.50"
+            android:scaleY="0.50"
+            android:src="@drawable/rewind"
+            android:background="@color/background"
             android:onClick="rewind"/>
 
-        <Button
-            android:layout_width="60dp"
-            android:layout_height="40dp"
-            android:text="▶i"
+        <ImageButton
+            android:layout_width="75dp"
+            android:layout_height="50dp"
+            android:scaleX="0.75"
+            android:scaleY="0.75"
+            android:tag="false"
+            android:src="@drawable/pause"
+            android:background="@color/background"
+            android:onClick="pause"/>
+
+        <ImageButton
+            android:layout_width="75dp"
+            android:layout_height="50dp"
+            android:scaleX="0.50"
+            android:scaleY="0.50"
+            android:src="@drawable/fast_forward"
+            android:background="@color/background"
+            android:onClick="fastForward"/>
+
+        <ImageButton
+            android:layout_width="75dp"
+            android:layout_height="50dp"
+            android:scaleX="0.50"
+            android:scaleY="0.50"
+            android:src="@drawable/next"
+            android:background="@color/background"
             android:onClick="nextSong"/>
 
-        <Button
-            android:layout_width="60dp"
-            android:layout_height="40dp"
-            android:text="i◀"
-            android:onClick="previousSong"/>
 
     </GridLayout>
 

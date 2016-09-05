@@ -15,6 +15,7 @@ import android.support.v7.widget.ButtonBarLayout;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
@@ -96,14 +97,21 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     public void pause(View view) {
-        Button b = (Button)view;
-        if( b.getText().equals( "ii" ) ) {
+        ImageButton b = (ImageButton)view;
+
+        if( b.getTag().equals( "false" ) ) {
             player.pause();
-            b.setText( "▶" );
+            b.setTag( "true" );
+            b.setImageResource( R.drawable.play );
+            b.setScaleX( 0.75f );
+            b.setScaleY( 0.75f );
         }
         else {
             player.start();
-            b.setText( "ii" );
+            b.setTag( "false" );
+            b.setImageResource( R.drawable.pause );
+            b.setScaleX( 0.75f );
+            b.setScaleY( 0.75f );
         }
     }
 
