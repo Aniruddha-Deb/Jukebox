@@ -11,7 +11,10 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.ButtonBarLayout;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
@@ -20,20 +23,22 @@ import com.sensei.jukebox.tools.Song;
 
 import java.io.IOException;
 
-public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl{
+public class PlayerActivity extends AppCompatActivity {
 
     private Song song;
     private MediaPlayer player;
-    private MediaController controller;
-    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        retrieveIntent();
+        if( savedInstanceState == null ) {
+            retrieveIntent();
+        }
+        else {
+            song = Constants.songs.get( savedInstanceState.getInt( Constants.SONG_POSITION ) );
+        }
         setUpUI();
 
-        handler = new Handler();
         try {
             playMusic();
         } catch (IOException e) {
@@ -44,15 +49,8 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnP
     @Override
     protected void onStop() {
         super.onStop();
-        controller.hide();
         player.stop();
         player.release();
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        controller.show();
-        return false;
     }
 
     public void setUpUI() {
@@ -93,79 +91,45 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnP
         Uri songUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, song.getId() );
         player = MediaPlayer.create( this, songUri );
         player.setAudioStreamType( AudioManager.STREAM_MUSIC );
-        player.setOnPreparedListener( this );
 
-        controller = new MediaController( this );
         player.start();
     }
 
-    //---------------- MediaPlayer Control methods -------------------------------------------------
-    @Override
-    public void start() {
-        player.start();
+    public void pause(View view) {
+        Button b = (Button)view;
+        if( b.getText().equals( "ii" ) ) {
+            player.pause();
+            b.setText( "▶" );
+        }
+        else {
+            player.start();
+            b.setText( "ii" );
+        }
     }
 
-    @Override
-    public void pause() {
-        player.pause();
+    public void fastForward(View view) {
+        player.seekTo( player.getCurrentPosition() + 5000 );
     }
 
-    @Override
-    public int getDuration() {
-        return player.getDuration();
+    public void rewind(View view) {
+        player.seekTo( player.getCurrentPosition() - 5000 );
     }
 
-    @Override
-    public int getCurrentPosition() {
-        return player.getCurrentPosition();
+    public void nextSong(View view) {
+        this.onStop();
+        this.onDestroy();
+
+        Bundle b = new Bundle();
+        b.putInt( Constants.SONG_POSITION, song.getPosition() + 1 );
+        this.onCreate( b );
     }
 
-    @Override
-    public void seekTo(int i) {
-        player.seekTo(i);
-    }
+    public void previousSong(View view) {
+        this.onStop();
+        this.onDestroy();
 
-    @Override
-    public boolean isPlaying() {
-        return player.isPlaying();
-    }
-
-    @Override
-    public int getBufferPercentage() {
-        return 0;
-    }
-
-    @Override
-    public boolean canPause() {
-        return true;
-    }
-
-    @Override
-    public boolean canSeekBackward() {
-        return true;
-    }
-
-    @Override
-    public boolean canSeekForward() {
-        return true;
-    }
-
-    @Override
-    public int getAudioSessionId() {
-        return 0;
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer mediaPlayer) {
-        controller.setMediaPlayer( this );
-        controller.setAnchorView( findViewById( R.id.media_controller_view ) );
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                controller.setEnabled( true );
-                controller.show();
-            }
-        });
+        Bundle b = new Bundle();
+        b.putInt( Constants.SONG_POSITION, song.getPosition() - 1 );
+        this.onCreate( b );
     }
 }

@@ -24,10 +24,21 @@ public class Song {
 
     MediaMetadataRetriever retriever = null;
 
+    private int position = 0;
+
     public Song( long id, Context context, String title ) {
         this.id = id;
         this.context = context;
         this.title = title;
+
+        getSongData();
+    }
+
+    public Song( long id, Context context, String title, int position ) {
+        this.id = id;
+        this.context = context;
+        this.title = title;
+        this.position = position;
 
         getSongData();
     }
@@ -83,18 +94,17 @@ public class Song {
     }
 
     public static Song unwrapSong( Bundle bundle, Context context ) {
-        return new Song( bundle.getLong( Constants.SONG_ID ), context, bundle.getString( Constants.SONG_TITLE ) );
+        return new Song( bundle.getLong( Constants.SONG_ID ),
+                         context,
+                         bundle.getString( Constants.SONG_TITLE ),
+                         bundle.getInt( Constants.SONG_POSITION ) );
     }
 
-    public static Bundle bundleSong( Song song ) {
+    public static Bundle bundleSong( Song song, int position ) {
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.SONG_TITLE,  song.toString());
-        bundle.putString(Constants.SONG_ALBUM,  song.getAlbum());
-        bundle.putString(Constants.SONG_ARTIST, song.getArtist());
-        bundle.putString(Constants.SONG_GENRE,  song.getGenre());
-        bundle.putLong  (Constants.SONG_ID,     song.getId());
-
-        bundle.putByteArray(Constants.SONG_ARTWORK, song.getAlbumArt());
+        bundle.putString(Constants.SONG_TITLE,    song.toString());
+        bundle.putInt   (Constants.SONG_POSITION, position);
+        bundle.putLong  (Constants.SONG_ID,       song.getId());
 
         return bundle;
     }
@@ -117,6 +127,14 @@ public class Song {
 
     public byte[] getAlbumArt() {
         return albumArt;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition( int position ) {
+        this.position = position;
     }
 
     @Override

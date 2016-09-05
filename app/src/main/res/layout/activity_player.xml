@@ -73,9 +73,39 @@
         android:layout_width="match_parent"
         android:layout_height="10dp" />
 
-    <Space
+    <GridLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:id="@+id/media_controller_view"/>
+        android:layout_height="match_parent">
 
+        <Button
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="ii"
+            android:onClick="pause"/>
+
+        <Button
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:text="▶▶"
+            android:onClick="fastForward"/>
+
+        <Button
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:text="◀◀"
+            android:onClick="rewind"/>
+
+        <Button
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:text="▶i"
+            android:onClick="nextSong"/>
+
+        <Button
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:text="i◀"
+            android:onClick="previousSong"/>
+
+    </GridLayout>
 </LinearLayout>

@@ -19,14 +19,12 @@ import java.util.Comparator;
 
 public class ListSongsActivity extends ListActivity {
 
-    private ArrayList<Song> songs = null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        songs = getSongs();
+        Constants.songs = getSongs();
         sortSongs();
-        SongAdapter adapter = new SongAdapter( this, songs );
+        SongAdapter adapter = new SongAdapter( this, Constants.songs );
         getListView().setAdapter( adapter );
     }
 
@@ -35,9 +33,9 @@ public class ListSongsActivity extends ListActivity {
                                 View itemView,
                                 int position,
                                 long id) {
-        Song song = songs.get( position );
+        Song song = Constants.songs.get( position );
         Intent intent = new Intent( this, PlayerActivity.class );
-        intent.putExtra( Constants.BUNDLE, Song.bundleSong( song ) );
+        intent.putExtra( Constants.BUNDLE, Song.bundleSong( song, position ) );
         startActivity( intent );
     }
 
@@ -68,11 +66,14 @@ public class ListSongsActivity extends ListActivity {
     }
 
     private void sortSongs() {
-        Collections.sort(songs, new Comparator<Song>() {
+        Collections.sort(Constants.songs, new Comparator<Song>() {
             @Override
             public int compare(Song a, Song b) {
                 return a.toString().compareTo(b.toString());
             }
         });
+        for( int i=0; i<Constants.songs.size(); i++ ) {
+            Constants.songs.get(i).setPosition( i );
+        }
     }
 }
