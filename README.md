@@ -11,7 +11,7 @@ On startup, jukebox queries the files on the user's device and lists them in a l
 
 Upon clicking a song, it reads and displays the song's tag data and plays the song
 
-![song_over_the_horizon](/doc/player_activity_custom_controller.png)
+![song_over_the_horizon](/doc/player_activity_ui_improvements.png)
 
 ## Installation
 
