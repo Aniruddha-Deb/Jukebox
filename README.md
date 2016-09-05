@@ -19,8 +19,6 @@ Download the [build.apk](https://github.com/Aniruddha-Deb/Jukebox/releases/downl
 
 ## Bugs
 
-The application will currently break on xhdpi+ devices as their layout hasn't been updated. 
-
 Most bugs have been fixed but a few asssociated with the application's state and mediaPlayer remain. They will be fixed in the upcoming builds.
 
 ## TODOs
