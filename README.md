@@ -11,7 +11,7 @@ On startup, jukebox queries the files on the user's device and lists them in a l
 
 Upon clicking a song, it reads and displays the song's tag data and plays the song
 
-![song_over_the_horizon](/doc/player_activity_with_controller.png)
+![song_over_the_horizon](/doc/player_activity_custom_controller.png)
 
 ## Installation
 
@@ -23,4 +23,4 @@ Most bugs have been fixed but a few asssociated with the application's state and
 
 ## TODOs
 
-Make a suitable MediaController that doesn't disappear every 3 seconds and improve the bland UI. Also need to make a service which plays the music when the activity is stopped and the screen is locked.
+Improve the custom mediaController and make a seek slider. Also need to make a service which plays the music when the activity is stopped and the screen is locked.
