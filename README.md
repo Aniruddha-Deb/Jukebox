@@ -19,7 +19,7 @@ Download the [build.apk](https://github.com/Aniruddha-Deb/Jukebox/releases/downl
 
 ## Bugs
 
-Most bugs have been fixed but a few asssociated with the application's state and mediaPlayer remain. They will be fixed in the upcoming builds.
+Most bugs have been fixed. If, however, any bug exists, feel free to open an issue and let me know about it.
 
 ## TODOs
 
