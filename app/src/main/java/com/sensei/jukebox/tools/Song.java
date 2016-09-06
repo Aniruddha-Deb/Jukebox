@@ -58,12 +58,8 @@ public class Song {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if( title != null ) {
-            System.out.println( title + " is null");
-        }
-        System.out.println( "now validating data" );
+
         validateData();
-        System.out.println( title + " after validating data" );
     }
 
     private void initFileLocation() {

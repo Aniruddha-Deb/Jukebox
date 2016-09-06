@@ -1,4 +1,16 @@
 <resources>
     <string name="app_name">Jukebox</string>
+
     <string name="album_artwork">album artwork</string>
+
+    <string name="album">Album</string>
+    <string name="title">Title</string>
+    <string name="artist">artist</string>
+    <string name="genre">genre</string>
+
+    <string name="previous_description">previous song button</string>
+    <string name="rewind_description">rewind button</string>
+    <string name="pause_description">pause/play button</string>
+    <string name="fast_forward_description">fast forward button</string>
+    <string name="next_description">next song button</string>
 </resources>

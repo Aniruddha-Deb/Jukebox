@@ -7,18 +7,14 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Handler;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.ButtonBarLayout;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sensei.jukebox.tools.Song;
 
@@ -43,7 +39,7 @@ public class PlayerActivity extends AppCompatActivity {
         try {
             playMusic();
         } catch (IOException e) {
-            e.printStackTrace();
+            Toast.makeText( this, "File was not found on your device", Toast.LENGTH_SHORT ).show();
         }
     }
 
@@ -91,9 +87,15 @@ public class PlayerActivity extends AppCompatActivity {
     private void playMusic() throws IOException {
         Uri songUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, song.getId() );
         player = MediaPlayer.create( this, songUri );
-        player.setAudioStreamType( AudioManager.STREAM_MUSIC );
 
-        player.start();
+        if( player == null ) {
+            player = new MediaPlayer(); // to prevent future functions from returning null
+            Toast.makeText( this, "This song extension is currently not supported", Toast.LENGTH_SHORT ).show();
+        }
+        else {
+            player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            player.start();
+        }
     }
 
     public void pause(View view) {
@@ -124,20 +126,32 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     public void nextSong(View view) {
-        this.onStop();
-        this.onDestroy();
 
-        Bundle b = new Bundle();
-        b.putInt( Constants.SONG_POSITION, song.getPosition() + 1 );
-        this.onCreate( b );
+        if( song.getPosition() + 1 > Constants.songs.size() ) {
+            Toast.makeText( this, "No next song available", Toast.LENGTH_SHORT ).show();
+        }
+        else {
+            this.onStop();
+            this.onDestroy();
+
+            Bundle b = new Bundle();
+            b.putInt(Constants.SONG_POSITION, song.getPosition() + 1);
+            this.onCreate(b);
+        }
     }
 
     public void previousSong(View view) {
-        this.onStop();
-        this.onDestroy();
 
-        Bundle b = new Bundle();
-        b.putInt( Constants.SONG_POSITION, song.getPosition() - 1 );
-        this.onCreate( b );
+        if( song.getPosition() - 1 < 0 ) {
+            Toast.makeText( this, "No previous song available", Toast.LENGTH_SHORT ).show();
+        }
+        else {
+            this.onStop();
+            this.onDestroy();
+
+            Bundle b = new Bundle();
+            b.putInt(Constants.SONG_POSITION, song.getPosition() - 1);
+            this.onCreate(b);
+        }
     }
 }

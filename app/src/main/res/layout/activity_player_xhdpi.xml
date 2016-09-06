@@ -13,7 +13,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Album"
+        android:text="@string/album"
         android:gravity="center"
         android:textSize="20sp"
         android:id="@+id/album"
@@ -40,7 +40,7 @@
         android:gravity="center"
         android:textSize="30sp"
         android:id="@+id/title"
-        android:text="Title"
+        android:text="@string/title"
         android:layout_gravity="center"/>
 
     <Space
@@ -53,7 +53,7 @@
         android:gravity="center"
         android:textSize="25sp"
         android:id="@+id/artist"
-        android:text="artist"
+        android:text="@string/artist"
         android:layout_gravity="center"/>
 
     <Space
@@ -65,7 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="genre"
+        android:text="@string/genre"
         android:id="@+id/genre"
         android:textSize="20sp"/>
 
@@ -85,6 +85,7 @@
             android:scaleY="0.50"
             android:src="@drawable/previous"
             android:background="@color/background"
+            android:contentDescription="@string/previous_description"
             android:onClick="previousSong"/>
 
         <ImageButton
@@ -94,6 +95,7 @@
             android:scaleY="0.50"
             android:src="@drawable/rewind"
             android:background="@color/background"
+            android:contentDescription="@string/rewind_description"
             android:onClick="rewind"/>
 
         <ImageButton
@@ -104,6 +106,7 @@
             android:tag="false"
             android:src="@drawable/pause"
             android:background="@color/background"
+            android:contentDescription="@string/pause_description"
             android:onClick="pause"/>
 
         <ImageButton
@@ -113,6 +116,7 @@
             android:scaleY="0.50"
             android:src="@drawable/fast_forward"
             android:background="@color/background"
+            android:contentDescription="@string/fast_forward_description"
             android:onClick="fastForward"/>
 
         <ImageButton
@@ -122,11 +126,9 @@
             android:scaleY="0.50"
             android:src="@drawable/next"
             android:background="@color/background"
+            android:contentDescription="@string/next_description"
             android:onClick="nextSong"/>
 
-
     </GridLayout>
-
-
 
 </LinearLayout>
