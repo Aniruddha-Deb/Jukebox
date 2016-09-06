@@ -41,6 +41,7 @@
         android:textSize="30sp"
         android:id="@+id/title"
         android:text="@string/title"
+        android:lines="1"
         android:layout_gravity="center"/>
 
     <Space
@@ -79,7 +80,7 @@
         android:layout_gravity="center">
 
         <ImageButton
-            android:layout_width="75dp"
+            android:layout_width="50dp"
             android:layout_height="50dp"
             android:scaleX="0.50"
             android:scaleY="0.50"
@@ -89,7 +90,7 @@
             android:onClick="previousSong"/>
 
         <ImageButton
-            android:layout_width="75dp"
+            android:layout_width="50dp"
             android:layout_height="50dp"
             android:scaleX="0.50"
             android:scaleY="0.50"
@@ -99,7 +100,7 @@
             android:onClick="rewind"/>
 
         <ImageButton
-            android:layout_width="75dp"
+            android:layout_width="50dp"
             android:layout_height="50dp"
             android:scaleX="0.75"
             android:scaleY="0.75"
@@ -110,7 +111,7 @@
             android:onClick="pause"/>
 
         <ImageButton
-            android:layout_width="75dp"
+            android:layout_width="50dp"
             android:layout_height="50dp"
             android:scaleX="0.50"
             android:scaleY="0.50"
@@ -120,7 +121,7 @@
             android:onClick="fastForward"/>
 
         <ImageButton
-            android:layout_width="75dp"
+            android:layout_width="50dp"
             android:layout_height="50dp"
             android:scaleX="0.50"
             android:scaleY="0.50"
