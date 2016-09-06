@@ -13,4 +13,5 @@
     <string name="pause_description">pause/play button</string>
     <string name="fast_forward_description">fast forward button</string>
     <string name="next_description">next song button</string>
+    <string name="time_value">00:00</string>
 </resources>

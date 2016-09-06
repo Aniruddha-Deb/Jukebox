@@ -20,14 +20,16 @@ import android.widget.Toast;
 
 import com.sensei.jukebox.tools.Song;
 
-import java.io.IOException;
+import java.util.Locale;
 
-public class PlayerActivity extends AppCompatActivity {
+public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener{
 
     private Song song;
     private MediaPlayer player;
 
     private SeekBar seekBar;
+    private TextView timeLeft;
+    private TextView timePassed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +42,7 @@ public class PlayerActivity extends AppCompatActivity {
         }
         setUpUI();
 
-        try {
-            playMusic();
-        } catch (IOException e) {
-            Toast.makeText( this, "File was not found on your device", Toast.LENGTH_SHORT ).show();
-        }
+        playMusic();
     }
 
     @Override
@@ -56,12 +54,7 @@ public class PlayerActivity extends AppCompatActivity {
 
     public void setUpUI() {
 
-        if( getResources().getDisplayMetrics().density <= 1.5 ) {
-            setContentView(R.layout.activity_player);
-        }
-        else {
-            setContentView(R.layout.activity_player_xhdpi);
-        }
+        setContentView(R.layout.activity_player);
 
         ImageView artwork = (ImageView)findViewById( R.id.albumArt );
         TextView album = (TextView)findViewById( R.id.album );
@@ -81,6 +74,10 @@ public class PlayerActivity extends AppCompatActivity {
             Bitmap bm = BitmapFactory.decodeByteArray(song.getAlbumArt(), 0, song.getAlbumArt().length);
             artwork.setImageBitmap(bm);
         }
+
+        seekBar = (SeekBar)findViewById( R.id.seekBar );
+        timeLeft = (TextView)findViewById( R.id.time_left );
+        timePassed = (TextView)findViewById( R.id.time_passed );
     }
 
     private void retrieveIntent() {
@@ -88,7 +85,7 @@ public class PlayerActivity extends AppCompatActivity {
         song = Song.unwrapSong( intent.getBundleExtra(Constants.BUNDLE), this );
     }
 
-    private void playMusic() throws IOException {
+    private void playMusic() {
         Uri songUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, song.getId() );
         player = MediaPlayer.create( this, songUri );
 
@@ -99,7 +96,43 @@ public class PlayerActivity extends AppCompatActivity {
         else {
             player.setAudioStreamType(AudioManager.STREAM_MUSIC);
             player.start();
+
+            seekBar.setMax( player.getDuration() / 1000 );
+            seekBar.setOnSeekBarChangeListener( this );
+
+            final Handler handler = new Handler();
+            PlayerActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        updateUI();
+                    } catch (IllegalStateException e) {
+                        // swallow exception
+                    }
+                    handler.postDelayed( this, 1000 );
+                }
+            });
         }
+    }
+
+    private void updateUI() {
+
+        int timePassedInSeconds = player.getCurrentPosition() / 1000;
+        int timeLeftInSeconds = player.getDuration() / 1000 - player.getCurrentPosition() / 1000;
+
+        seekBar.setProgress(timePassedInSeconds);
+
+        int minutes = (timePassedInSeconds % 3600) / 60;
+        int seconds = timePassedInSeconds % 60;
+
+        String $timePassed = String.format(Locale.ENGLISH, "%02d:%02d", minutes, seconds);
+        timePassed.setText($timePassed);
+
+        minutes = (timeLeftInSeconds % 3600) / 60;
+        seconds = timeLeftInSeconds % 60;
+
+        String $timeLeft = String.format(Locale.ENGLISH, "%02d:%02d", minutes, seconds);
+        timeLeft.setText($timeLeft);
     }
 
     public void pause(View view) {
@@ -123,10 +156,12 @@ public class PlayerActivity extends AppCompatActivity {
 
     public void fastForward(View view) {
         player.seekTo( player.getCurrentPosition() + 5000 );
+        updateUI();
     }
 
     public void rewind(View view) {
         player.seekTo( player.getCurrentPosition() - 5000 );
+        updateUI();
     }
 
     public void nextSong(View view) {
@@ -157,5 +192,23 @@ public class PlayerActivity extends AppCompatActivity {
             b.putInt(Constants.SONG_POSITION, song.getPosition() - 1);
             this.onCreate(b);
         }
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+        if( player != null && b ) {
+            player.seekTo( i * 1000 );
+            updateUI();
+        }
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
     }
 }

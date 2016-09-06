@@ -74,67 +74,97 @@
         android:layout_width="match_parent"
         android:layout_height="10dp" />
 
-    <GridLayout
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center">
+        android:orientation="horizontal"
+        android:gravity="center">
 
         <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:src="@drawable/previous"
+            android:layout_weight="0.5"
             android:scaleX="0.5"
             android:scaleY="0.5"
-            android:background="@color/background"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/previous_description"
             android:onClick="previousSong"/>
 
         <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:src="@drawable/rewind"
+            android:layout_weight="0.5"
             android:scaleX="0.5"
             android:scaleY="0.5"
-            android:background="@color/background"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/rewind_description"
             android:onClick="rewind"/>
 
         <ImageButton
-            android:layout_width="75dp"
+            android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:src="@drawable/pause"
             android:scaleX="0.75"
             android:scaleY="0.75"
+            android:layout_weight="2"
             android:tag="false"
-            android:background="@color/background"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/pause_description"
             android:onClick="pause"/>
 
         <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:src="@drawable/fast_forward"
+            android:layout_weight="0.5"
             android:scaleX="0.5"
             android:scaleY="0.5"
-            android:background="@color/background"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/fast_forward_description"
             android:onClick="fastForward"/>
 
         <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:src="@drawable/next"
             android:scaleX="0.5"
             android:scaleY="0.5"
-            android:background="@color/background"
+            android:layout_weight="0.5"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/next_description"
             android:onClick="nextSong"/>
 
-    </GridLayout>
+    </LinearLayout>
 
-    <SeekBar
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:id="@+id/seekBar"/>
+        android:orientation="horizontal"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_gravity="top"
+            android:id="@+id/time_passed"
+            android:text="@string/time_value"/>
+
+        <SeekBar
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center|top"
+            android:id="@+id/seekBar"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_gravity="top"
+            android:id="@+id/time_left"
+            android:text="@string/time_value"/>
+
+    </LinearLayout>
 </LinearLayout>
