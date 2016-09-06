@@ -11,7 +11,7 @@ On startup, jukebox queries the files on the user's device and lists them in a l
 
 Upon clicking a song, it reads and displays the song's tag data and plays the song
 
-![song_over_the_horizon](/doc/player_activity_ui_improvements.png)
+![song_over_the_horizon](/doc/player_activity_slider.png)
 
 ## Installation
 
@@ -19,8 +19,8 @@ Download the [build.apk](https://github.com/Aniruddha-Deb/Jukebox/releases/downl
 
 ## Bugs
 
-Most bugs have been fixed. If, however, any bug exists, feel free to open an issue and let me know about it.
+The slider thumb in low-res phones (such as my samsung gt-i9060) is misplaced. This does not occur in hi-res phones (oneplus 2, moto x) and needs to be fixed
 
 ## TODOs
 
-Improve the custom mediaController and make a seek slider. Also need to make a service which plays the music when the activity is stopped and the screen is locked.
+Make a service which plays the music when the activity is stopped and the screen is locked.
