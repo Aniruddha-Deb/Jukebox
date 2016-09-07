@@ -133,6 +133,10 @@ public class Song {
         this.position = position;
     }
 
+    public Uri getUri() {
+        return location;
+    }
+
     @Override
     public String toString() {
         return title;

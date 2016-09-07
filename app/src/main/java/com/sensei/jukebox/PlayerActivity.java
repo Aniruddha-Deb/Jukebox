@@ -40,16 +40,21 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
         else {
             song = Constants.songs.get( savedInstanceState.getInt( Constants.SONG_POSITION ) );
         }
-        setUpUI();
 
-        playMusic();
+        Intent intent = new Intent( this, PlayerService.class );
+        intent.putExtra( Constants.SONG_POSITION, song.getPosition() );
+        startService( intent );
+
+//        setUpUI();
+
+//        playMusic();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        player.stop();
-        player.release();
+//        player.stop();
+//        player.release();
     }
 
     public void setUpUI() {
@@ -166,7 +171,7 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
 
     public void nextSong(View view) {
 
-        if( song.getPosition() + 1 > Constants.songs.size() ) {
+        if( song.getPosition() + 1 >= Constants.songs.size() ) {
             Toast.makeText( this, "No next song available", Toast.LENGTH_SHORT ).show();
         }
         else {
