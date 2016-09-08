@@ -1,15 +1,15 @@
 package com.sensei.jukebox;
 
-import android.content.ContentUris;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
@@ -31,6 +31,23 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
     private TextView timeLeft;
     private TextView timePassed;
 
+    private PlayerService service;
+    private boolean boundToService;
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            PlayerService.PlayerBinder binder = (PlayerService.PlayerBinder) iBinder;
+            service = binder.getService();
+            player = service.getPlayer();
+            boundToService = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            boundToService = false;
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,11 +60,10 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
 
         Intent intent = new Intent( this, PlayerService.class );
         intent.putExtra( Constants.SONG_POSITION, song.getPosition() );
-        startService( intent );
+        bindService( intent, connection, Context.BIND_AUTO_CREATE );
 
-//        setUpUI();
-
-//        playMusic();
+        setUpUI();
+        //updateUIComponents();
     }
 
     @Override
@@ -90,34 +106,23 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
         song = Song.unwrapSong( intent.getBundleExtra(Constants.BUNDLE), this );
     }
 
-    private void playMusic() {
-        Uri songUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, song.getId() );
-        player = MediaPlayer.create( this, songUri );
+    private void updateUIComponents() {
 
-        if( player == null ) {
-            player = new MediaPlayer(); // to prevent future functions from returning null
-            Toast.makeText( this, "This song extension is currently not supported", Toast.LENGTH_SHORT ).show();
-        }
-        else {
-            player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            player.start();
+        seekBar.setMax(player.getDuration() / 1000);
+        seekBar.setOnSeekBarChangeListener(this);
 
-            seekBar.setMax( player.getDuration() / 1000 );
-            seekBar.setOnSeekBarChangeListener( this );
-
-            final Handler handler = new Handler();
-            PlayerActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        updateUI();
-                    } catch (IllegalStateException e) {
-                        // swallow exception
-                    }
-                    handler.postDelayed( this, 1000 );
+        final Handler handler = new Handler();
+        PlayerActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    updateUI();
+                } catch (IllegalStateException e) {
+                    // swallow exception
                 }
-            });
-        }
+                handler.postDelayed(this, 1000);
+            }
+        });
     }
 
     private void updateUI() {
@@ -144,14 +149,14 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
         ImageButton b = (ImageButton)view;
 
         if( b.getTag().equals( "false" ) ) {
-            player.pause();
+            service.pause();
             b.setTag( "true" );
             b.setImageResource( R.drawable.play );
             b.setScaleX( 0.75f );
             b.setScaleY( 0.75f );
         }
         else {
-            player.start();
+            service.play();
             b.setTag( "false" );
             b.setImageResource( R.drawable.pause );
             b.setScaleX( 0.75f );
@@ -160,12 +165,12 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
     }
 
     public void fastForward(View view) {
-        player.seekTo( player.getCurrentPosition() + 5000 );
+        service.fastForward();
         updateUI();
     }
 
     public void rewind(View view) {
-        player.seekTo( player.getCurrentPosition() - 5000 );
+        service.rewind();
         updateUI();
     }
 
