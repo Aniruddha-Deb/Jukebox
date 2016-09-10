@@ -53,24 +53,32 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
         super.onCreate(savedInstanceState);
         if( savedInstanceState == null ) {
             retrieveIntent();
+            Intent intent = new Intent( this, PlayerService.class );
+            intent.putExtra( Constants.SONG_POSITION, song.getPosition() );
+            startService( intent );
+
+            bindService( intent, connection, Context.BIND_AUTO_CREATE );
         }
         else {
             song = Constants.songs.get( savedInstanceState.getInt( Constants.SONG_POSITION ) );
+            Intent intent = new Intent( this, PlayerService.class );
+            bindService( intent, connection, Context.BIND_AUTO_CREATE );
+            service.onDestroy();
+
+            intent.putExtra( Constants.SONG_POSITION, song.getPosition() );
+            startService( intent );
+            bindService( intent, connection, Context.BIND_AUTO_CREATE );
         }
 
-        Intent intent = new Intent( this, PlayerService.class );
-        intent.putExtra( Constants.SONG_POSITION, song.getPosition() );
-        bindService( intent, connection, Context.BIND_AUTO_CREATE );
+//        player = service.getPlayer();
 
         setUpUI();
-        updateUIComponents();
+//        updateUIComponents();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-//        player.stop();
-//        player.release();
     }
 
     public void setUpUI() {
@@ -109,6 +117,7 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
     private void updateUIComponents() {
 
         if( player != null ) {
+
             seekBar.setMax(player.getDuration() / 1000);
             seekBar.setOnSeekBarChangeListener(this);
 

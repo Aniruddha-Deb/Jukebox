@@ -21,7 +21,6 @@ public class PlayerService extends Service {
 
     @Override
     public void onCreate() {
-        player = new MediaPlayer();
         super.onCreate();
     }
 
@@ -29,13 +28,8 @@ public class PlayerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         song = Constants.songs.get( intent.getExtras().getInt( Constants.SONG_POSITION ) );
-        try {
-            player.setDataSource( getApplicationContext(), song.getUri() );
-            player.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
+        player = MediaPlayer.create( getApplicationContext(), song.getUri() );
         player.setAudioStreamType( AudioManager.STREAM_MUSIC );
         player.start();
 
@@ -43,9 +37,14 @@ public class PlayerService extends Service {
     }
 
     @Override
+    public void onDestroy() {
+        player.stop();
+        player.release();
+        super.onDestroy();
+    }
+
+    @Override
     public IBinder onBind(Intent intent) {
-        onCreate();
-        onStartCommand( intent, 0, 0 );
         return playerBinder;
     }
 
