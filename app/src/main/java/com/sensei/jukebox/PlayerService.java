@@ -14,10 +14,16 @@ import java.io.IOException;
 
 public class PlayerService extends Service {
 
-    private MediaPlayer player = new MediaPlayer();
+    private MediaPlayer player;
     private Song song;
 
     private final IBinder playerBinder = new PlayerBinder();
+
+    @Override
+    public void onCreate() {
+        player = new MediaPlayer();
+        super.onCreate();
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -38,6 +44,7 @@ public class PlayerService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        onCreate();
         onStartCommand( intent, 0, 0 );
         return playerBinder;
     }

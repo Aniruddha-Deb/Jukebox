@@ -63,7 +63,7 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
         bindService( intent, connection, Context.BIND_AUTO_CREATE );
 
         setUpUI();
-        //updateUIComponents();
+        updateUIComponents();
     }
 
     @Override
@@ -108,21 +108,23 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
 
     private void updateUIComponents() {
 
-        seekBar.setMax(player.getDuration() / 1000);
-        seekBar.setOnSeekBarChangeListener(this);
+        if( player != null ) {
+            seekBar.setMax(player.getDuration() / 1000);
+            seekBar.setOnSeekBarChangeListener(this);
 
-        final Handler handler = new Handler();
-        PlayerActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    updateUI();
-                } catch (IllegalStateException e) {
-                    // swallow exception
+            final Handler handler = new Handler();
+            PlayerActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        updateUI();
+                    } catch (IllegalStateException e) {
+                        // swallow exception
+                    }
+                    handler.postDelayed(this, 1000);
                 }
-                handler.postDelayed(this, 1000);
-            }
-        });
+            });
+        }
     }
 
     private void updateUI() {
