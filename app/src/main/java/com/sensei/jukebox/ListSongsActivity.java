@@ -1,7 +1,9 @@
 package com.sensei.jukebox;
 
+import android.app.ActivityManager;
 import android.app.ListActivity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -34,6 +36,10 @@ public class ListSongsActivity extends ListActivity {
                                 int position,
                                 long id) {
         Song song = Constants.songs.get( position );
+        if( serviceIsRunning() ) {
+            stopService( new Intent( this, PlayerService.class ) );
+        }
+
         Intent intent = new Intent( this, PlayerActivity.class );
         intent.putExtra( Constants.BUNDLE, Song.bundleSong( song, position ) );
         startActivity( intent );
@@ -63,6 +69,16 @@ public class ListSongsActivity extends ListActivity {
         }
 
         return songs;
+    }
+
+    private boolean serviceIsRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (PlayerService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void sortSongs() {

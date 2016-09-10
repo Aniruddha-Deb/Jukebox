@@ -32,45 +32,38 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
     private TextView timePassed;
 
     private PlayerService service;
-    private boolean boundToService;
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             PlayerService.PlayerBinder binder = (PlayerService.PlayerBinder) iBinder;
             service = binder.getService();
             player = service.getPlayer();
-            boundToService = true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            boundToService = false;
+
         }
     };
+
+    private void connectToService( int songPosition ) {
+        Intent intent = new Intent( this, PlayerService.class );
+        intent.putExtra( Constants.SONG_POSITION, songPosition );
+        startService( intent );
+        bindService( intent, connection, Context.BIND_AUTO_CREATE );
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if( savedInstanceState == null ) {
             retrieveIntent();
-            Intent intent = new Intent( this, PlayerService.class );
-            intent.putExtra( Constants.SONG_POSITION, song.getPosition() );
-            startService( intent );
-
-            bindService( intent, connection, Context.BIND_AUTO_CREATE );
         }
         else {
             song = Constants.songs.get( savedInstanceState.getInt( Constants.SONG_POSITION ) );
-            Intent intent = new Intent( this, PlayerService.class );
-            bindService( intent, connection, Context.BIND_AUTO_CREATE );
-            service.onDestroy();
-
-            intent.putExtra( Constants.SONG_POSITION, song.getPosition() );
-            startService( intent );
-            bindService( intent, connection, Context.BIND_AUTO_CREATE );
         }
-
-//        player = service.getPlayer();
+        connectToService( song.getPosition() );
 
         setUpUI();
 //        updateUIComponents();
@@ -115,7 +108,7 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
     }
 
     private void updateUIComponents() {
-
+        player = service.getPlayer();
         if( player != null ) {
 
             seekBar.setMax(player.getDuration() / 1000);
@@ -177,12 +170,12 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
 
     public void fastForward(View view) {
         service.fastForward();
-        updateUI();
+//        updateUI();
     }
 
     public void rewind(View view) {
         service.rewind();
-        updateUI();
+//        updateUI();
     }
 
     public void nextSong(View view) {
@@ -193,6 +186,7 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
         else {
             this.onStop();
             this.onDestroy();
+            service.onDestroy();
 
             Bundle b = new Bundle();
             b.putInt(Constants.SONG_POSITION, song.getPosition() + 1);
@@ -208,6 +202,7 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
         else {
             this.onStop();
             this.onDestroy();
+            service.onDestroy();
 
             Bundle b = new Bundle();
             b.putInt(Constants.SONG_POSITION, song.getPosition() - 1);
@@ -217,10 +212,8 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-        if( player != null && b ) {
-            player.seekTo( i * 1000 );
-            updateUI();
-        }
+        service.seekTo( i * 1000 );
+        updateUI();
     }
 
     @Override
