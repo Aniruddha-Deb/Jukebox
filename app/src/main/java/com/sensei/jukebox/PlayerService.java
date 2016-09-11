@@ -31,6 +31,7 @@ public class PlayerService extends Service {
             player.setAudioStreamType(AudioManager.STREAM_MUSIC);
             player.start();
         } catch ( NullPointerException e ) {
+            player = new MediaPlayer();  // to avoid future null pointer exceptions
             Toast.makeText( getApplicationContext(), "File format not supported", Toast.LENGTH_SHORT ).show();
         }
 
@@ -39,10 +40,8 @@ public class PlayerService extends Service {
 
     @Override
     public void onDestroy() {
-        if( player != null ) {
-            player.stop();
-            player.release();
-        }
+        player.stop();
+        player.release();
         super.onDestroy();
     }
 

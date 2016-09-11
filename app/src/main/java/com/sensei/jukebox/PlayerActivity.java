@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -32,41 +33,56 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
     private TextView timePassed;
 
     private PlayerService service;
-    private ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            PlayerService.PlayerBinder binder = (PlayerService.PlayerBinder) iBinder;
-            service = binder.getService();
-            player = service.getPlayer();
-        }
+    private ServiceConnection connection = null ;
 
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-
-        }
-    };
+    public PlayerActivity() {
+        Log.d( "PlayerActivity", "New instance of Activity created" );
+    }
 
     private void connectToService( int songPosition ) {
         Intent intent = new Intent( this, PlayerService.class );
         intent.putExtra( Constants.SONG_POSITION, songPosition );
         startService( intent );
+        Log.d( "PlayerActivity", "connectToService started service" );
         bindService( intent, connection, Context.BIND_AUTO_CREATE );
+        Log.d( "PlayerActivity", "connectToService bound to service" );
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d( "PlayerActivity", "onCreate called" );
         super.onCreate(savedInstanceState);
 
+        this.connection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                PlayerService.PlayerBinder binder = (PlayerService.PlayerBinder) iBinder;
+                service = binder.getService();
+                Log.d( "PlayerActivity", "srvConn got service" );
+                player = service.getPlayer();
+
+                setUpUI();
+                Log.d( "PlayerActivity", "srvConn set up UI" );
+                updateUIComponents();
+                Log.d( "PlayerActivity", "srvConn updated UI components" );
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+
+            }
+        };
+
         if( savedInstanceState == null ) {
+            Log.d( "PlayerActivity", "onCreate found no song passed on, playing selected song" );
             retrieveIntent();
         }
         else {
+            Log.d( "PlayerActivity", "onCreate retrieved song" );
             song = Constants.songs.get( savedInstanceState.getInt( Constants.SONG_POSITION ) );
         }
+        Log.d( "PlayerActivity", "onCreate connecting to service" );
         connectToService( song.getPosition() );
-
-        setUpUI();
-//        updateUIComponents();
     }
 
     @Override
@@ -170,12 +186,12 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
 
     public void fastForward(View view) {
         service.fastForward();
-//        updateUI();
+        updateUI();
     }
 
     public void rewind(View view) {
         service.rewind();
-//        updateUI();
+        updateUI();
     }
 
     public void nextSong(View view) {
@@ -184,13 +200,14 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
             Toast.makeText( this, "No next song available", Toast.LENGTH_SHORT ).show();
         }
         else {
+            service.onDestroy();
             this.onStop();
             this.onDestroy();
-            service.onDestroy();
 
             Bundle b = new Bundle();
             b.putInt(Constants.SONG_POSITION, song.getPosition() + 1);
             this.onCreate(b);
+            Log.d( "PreviousSong", "created the activity" );
         }
     }
 
@@ -200,19 +217,22 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
             Toast.makeText( this, "No previous song available", Toast.LENGTH_SHORT ).show();
         }
         else {
+            service.onDestroy();
             this.onStop();
             this.onDestroy();
-            service.onDestroy();
 
             Bundle b = new Bundle();
             b.putInt(Constants.SONG_POSITION, song.getPosition() - 1);
             this.onCreate(b);
+            Log.d( "PreviousSong", "created the activity" );
         }
     }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-        service.seekTo( i * 1000 );
+        if( b ) {
+            service.seekTo(i * 1000);
+        }
         updateUI();
     }
 
