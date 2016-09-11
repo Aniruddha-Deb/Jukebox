@@ -19,7 +19,7 @@ Download the [build.apk](https://github.com/Aniruddha-Deb/Jukebox/releases/downl
 
 ## Bugs
 
-The slider thumb in low-res phones (such as my samsung gt-i9060) is misplaced. This does not occur in hi-res phones (oneplus 2, moto x) and needs to be fixed. Also, the slider/timebar does not get updated when the service is playing as the player object in the service, for some reason, returns null.
+The slider thumb in low-res phones (such as my samsung gt-i9060) is misplaced. This does not occur in hi-res phones (oneplus 2, moto x) and needs to be fixed.
 
 ## TODOs
 
