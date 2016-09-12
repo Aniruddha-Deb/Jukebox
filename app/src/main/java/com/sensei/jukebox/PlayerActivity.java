@@ -1,12 +1,17 @@
 package com.sensei.jukebox;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Icon;
 import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -31,6 +36,8 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
     private SeekBar seekBar;
     private TextView timeLeft;
     private TextView timePassed;
+
+    private Bitmap songImage;
 
     private PlayerService service;
     private ServiceConnection connection = null ;
@@ -65,6 +72,8 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
                 Log.d( "PlayerActivity", "srvConn set up UI" );
                 updateUIComponents();
                 Log.d( "PlayerActivity", "srvConn updated UI components" );
+                displayNotification();
+                Log.d( "PlayerActivity", "srvConn created notification" );
             }
 
             @Override
@@ -106,16 +115,32 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
         genre.setText( song.getGenre() );
 
         if( song.getAlbumArt() == null ) {
-            artwork.setImageResource( R.drawable.no_album_art_icon );
+            songImage = BitmapFactory.decodeResource( this.getResources(), R.drawable.no_album_art_icon );
         }
         else {
-            Bitmap bm = BitmapFactory.decodeByteArray(song.getAlbumArt(), 0, song.getAlbumArt().length);
-            artwork.setImageBitmap(bm);
+            songImage = BitmapFactory.decodeByteArray(song.getAlbumArt(), 0, song.getAlbumArt().length);
         }
+        artwork.setImageBitmap( songImage );
 
         seekBar = (SeekBar)findViewById( R.id.seekBar );
         timeLeft = (TextView)findViewById( R.id.time_left );
         timePassed = (TextView)findViewById( R.id.time_passed );
+    }
+
+    private void displayNotification() {
+        Uri alarm = RingtoneManager.getDefaultUri( RingtoneManager.TYPE_NOTIFICATION );
+
+        Notification notification = new Notification.Builder( this )
+                .setSmallIcon( R.mipmap.ic_launcher )
+                .setLargeIcon( songImage )
+                .setContentTitle( song.toString() )
+                .setAutoCancel( true )
+                .setPriority( Notification.PRIORITY_MAX )
+                .setContentText( song.getArtist() )
+                .build();
+
+        NotificationManager manager = (NotificationManager) getSystemService( Context.NOTIFICATION_SERVICE );
+        manager.notify( 5252, notification );
     }
 
     private void retrieveIntent() {
@@ -206,8 +231,8 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
 
             Bundle b = new Bundle();
             b.putInt(Constants.SONG_POSITION, song.getPosition() + 1);
+            Log.d( "PlayerActivity", "Found next song, recreating activity" );
             this.onCreate(b);
-            Log.d( "PreviousSong", "created the activity" );
         }
     }
 
@@ -223,8 +248,8 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
 
             Bundle b = new Bundle();
             b.putInt(Constants.SONG_POSITION, song.getPosition() - 1);
+            Log.d( "PlayerActivity", "Found previous song, recreating activity" );
             this.onCreate(b);
-            Log.d( "PreviousSong", "created the activity" );
         }
     }
 
