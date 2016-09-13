@@ -11,6 +11,7 @@ public class Constants {
     public static final String SONG_TITLE    = "title";
     public static final String SONG_ID       = "id";
     public static final String SONG_POSITION = "position";
+    public static final String IS_RUNNING    = "is it running?";
 
     public static ArrayList<Song> songs = new ArrayList<>();
 

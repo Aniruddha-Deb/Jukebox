@@ -1,8 +1,13 @@
 package com.sensei.jukebox;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
@@ -16,6 +21,8 @@ public class PlayerService extends Service {
     private MediaPlayer player;
     private final IBinder playerBinder = new PlayerBinder();
 
+    private Song song;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -24,7 +31,7 @@ public class PlayerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Song song = Constants.songs.get( intent.getExtras().getInt( Constants.SONG_POSITION ) );
+        song = Constants.songs.get( intent.getExtras().getInt( Constants.SONG_POSITION ) );
 
         player = MediaPlayer.create( getApplicationContext(), song.getUri() );
         try {
@@ -35,15 +42,20 @@ public class PlayerService extends Service {
             Toast.makeText( getApplicationContext(), "File format not supported", Toast.LENGTH_SHORT ).show();
         }
 
+        showNotification();
+
         return 1;
     }
 
     @Override
     public void onDestroy() {
+        stopForeground( true );
         player.stop();
         player.release();
         super.onDestroy();
     }
+
+
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -53,6 +65,39 @@ public class PlayerService extends Service {
     @Override
     public boolean bindService(Intent service, ServiceConnection conn, int flags) {
         return super.bindService(service, conn, flags);
+    }
+
+    private void showNotification() {
+        Bitmap bm;
+        if( song.getAlbumArt() == null ) {
+            bm = BitmapFactory.decodeResource( getResources(), R.drawable.no_album_art_icon );
+        }
+        else {
+            bm = BitmapFactory.decodeByteArray( song.getAlbumArt(), 0, song.getAlbumArt().length );
+        }
+
+        TaskStackBuilder builder = TaskStackBuilder.create( this );
+        builder.addParentStack( PlayerActivity.class );
+
+        Intent notifIntent = new Intent( this, PlayerActivity.class );
+        notifIntent.putExtra( Constants.BUNDLE, Song.bundleSong( song, song.getPosition() ) );
+        notifIntent.putExtra( Constants.IS_RUNNING, true );
+
+        builder.addNextIntent( notifIntent );
+        PendingIntent pi = builder.getPendingIntent( 0, PendingIntent.FLAG_UPDATE_CURRENT );
+
+        Notification notif = new Notification.Builder(getApplicationContext())
+                .setSmallIcon( R.mipmap.ic_launcher )
+                .setLargeIcon( Bitmap.createScaledBitmap( bm, 64, 64, false ) )
+                .setContentTitle( song.toString() )
+                .setAutoCancel( true )
+                .setPriority( Notification.PRIORITY_MAX )
+                .setContentIntent( pi )
+                .setContentText( song.getArtist() )
+                .build();
+
+        startForeground( 5252, notif );
+
     }
 
     public void pause() {

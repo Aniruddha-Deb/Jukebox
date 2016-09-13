@@ -1,5 +1,6 @@
 package com.sensei.jukebox;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.ComponentName;
@@ -38,6 +39,7 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
     private TextView timePassed;
 
     private Bitmap songImage;
+    private boolean wasRunning = false;
 
     private PlayerService service;
     private ServiceConnection connection = null ;
@@ -49,10 +51,18 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
     private void connectToService( int songPosition ) {
         Intent intent = new Intent( this, PlayerService.class );
         intent.putExtra( Constants.SONG_POSITION, songPosition );
-        startService( intent );
-        Log.d( "PlayerActivity", "connectToService started service" );
-        bindService( intent, connection, Context.BIND_AUTO_CREATE );
-        Log.d( "PlayerActivity", "connectToService bound to service" );
+
+        if( wasRunning ) {
+            Log.d( "PlayerActivity", "service already running, binding to it" );
+            bindService( intent, connection, Context.BIND_AUTO_CREATE );
+            Log.d( "PlayerActivity", "connectToService bound to service" );
+        }
+        else {
+            startService(intent);
+            Log.d("PlayerActivity", "connectToService started service");
+            bindService(intent, connection, Context.BIND_AUTO_CREATE);
+            Log.d("PlayerActivity", "connectToService bound to service");
+        }
     }
 
     @Override
@@ -72,13 +82,13 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
                 Log.d( "PlayerActivity", "srvConn set up UI" );
                 updateUIComponents();
                 Log.d( "PlayerActivity", "srvConn updated UI components" );
-                displayNotification();
+                //displayNotification();
                 Log.d( "PlayerActivity", "srvConn created notification" );
             }
 
             @Override
             public void onServiceDisconnected(ComponentName componentName) {
-
+                service.onDestroy();
             }
         };
 
@@ -89,6 +99,7 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
         else {
             Log.d( "PlayerActivity", "onCreate retrieved song" );
             song = Constants.songs.get( savedInstanceState.getInt( Constants.SONG_POSITION ) );
+            wasRunning = false;
         }
         Log.d( "PlayerActivity", "onCreate connecting to service" );
         connectToService( song.getPosition() );
@@ -97,6 +108,11 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
     @Override
     protected void onStop() {
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     public void setUpUI() {
@@ -146,6 +162,7 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
     private void retrieveIntent() {
         Intent intent = getIntent();
         song = Song.unwrapSong( intent.getBundleExtra(Constants.BUNDLE), this );
+        wasRunning = intent.getBooleanExtra( Constants.IS_RUNNING, false );
     }
 
     private void updateUIComponents() {
