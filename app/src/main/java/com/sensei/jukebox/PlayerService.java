@@ -12,6 +12,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.sensei.jukebox.tools.Song;
@@ -78,6 +79,10 @@ public class PlayerService extends Service {
 
         TaskStackBuilder builder = TaskStackBuilder.create( this );
         builder.addParentStack( PlayerActivity.class );
+        RemoteViews notifView = new RemoteViews( getPackageName(), R.layout.notification_layout );
+
+        notifView.setTextViewText( R.id.notif_title, song.toString() );
+        notifView.setTextViewText( R.id.notif_artist, song.getArtist() );
 
         Intent notifIntent = new Intent( this, PlayerActivity.class );
         notifIntent.putExtra( Constants.BUNDLE, Song.bundleSong( song, song.getPosition() ) );
@@ -87,13 +92,12 @@ public class PlayerService extends Service {
         PendingIntent pi = builder.getPendingIntent( 0, PendingIntent.FLAG_UPDATE_CURRENT );
 
         Notification notif = new Notification.Builder(getApplicationContext())
-                .setSmallIcon( R.mipmap.ic_launcher )
-                .setLargeIcon( Bitmap.createScaledBitmap( bm, 64, 64, false ) )
-                .setContentTitle( song.toString() )
+                .setSmallIcon( R.drawable.play )
+                //.setLargeIcon( Bitmap.createScaledBitmap( bm, 64, 64, false ) )
                 .setAutoCancel( true )
                 .setPriority( Notification.PRIORITY_MAX )
+                .setContent( notifView )
                 .setContentIntent( pi )
-                .setContentText( song.getArtist() )
                 .build();
 
         startForeground( 5252, notif );

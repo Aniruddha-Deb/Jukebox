@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:id="@+id/notif_title"
+        android:text="@string/title"
+        android:layout_gravity="center"
+        android:lines="1"/>
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="10dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:id="@+id/notif_artist"
+        android:text="@string/artist"
+        android:layout_gravity="center"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/previous"
+            android:layout_weight="0.5"
+            android:scaleX="0.5"
+            android:scaleY="0.5"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/previous_description"
+            android:onClick="previousSong"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/rewind"
+            android:layout_weight="0.5"
+            android:scaleX="0.5"
+            android:scaleY="0.5"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/rewind_description"
+            android:onClick="rewind"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:src="@drawable/pause"
+            android:scaleX="0.75"
+            android:scaleY="0.75"
+            android:layout_weight="2"
+            android:tag="false"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/pause_description"
+            android:onClick="pause"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/fast_forward"
+            android:layout_weight="0.5"
+            android:scaleX="0.5"
+            android:scaleY="0.5"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/fast_forward_description"
+            android:onClick="fastForward"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/next"
+            android:scaleX="0.5"
+            android:scaleY="0.5"
+            android:layout_weight="0.5"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/next_description"
+            android:onClick="nextSong"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_gravity="top"
+            android:id="@+id/time_passed"
+            android:text="@string/time_value"/>
+
+        <SeekBar
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center|top"
+            android:id="@+id/seekBar"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_gravity="top"
+            android:id="@+id/time_left"
+            android:text="@string/time_value"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>
