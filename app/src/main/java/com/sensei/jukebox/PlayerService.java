@@ -12,6 +12,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -79,7 +80,7 @@ public class PlayerService extends Service {
 
         TaskStackBuilder builder = TaskStackBuilder.create( this );
         builder.addParentStack( PlayerActivity.class );
-        RemoteViews notifView = new RemoteViews( getPackageName(), R.layout.notification_layout );
+        RemoteViews notifView = new RemoteViews( getApplicationContext().getPackageName(), R.layout.notification_layout );
 
         notifView.setTextViewText( R.id.notif_title, song.toString() );
         notifView.setTextViewText( R.id.notif_artist, song.getArtist() );
@@ -91,14 +92,17 @@ public class PlayerService extends Service {
         builder.addNextIntent( notifIntent );
         PendingIntent pi = builder.getPendingIntent( 0, PendingIntent.FLAG_UPDATE_CURRENT );
 
-        Notification notif = new Notification.Builder(getApplicationContext())
-                .setSmallIcon( R.drawable.play )
-                //.setLargeIcon( Bitmap.createScaledBitmap( bm, 64, 64, false ) )
+        NotificationCompat.Builder base = new NotificationCompat.Builder(getApplicationContext())
+                .setSmallIcon( R.mipmap.ic_launcher )
+                .setContentTitle( song.toString() )
+                .setContentText( song.getArtist() )
+                .setLargeIcon( Bitmap.createScaledBitmap( bm, 64, 64, false ) )
                 .setAutoCancel( true )
                 .setPriority( Notification.PRIORITY_MAX )
-                .setContent( notifView )
-                .setContentIntent( pi )
-                .build();
+                //.setContent( notifView ) god knows why this is not working
+                .setContentIntent( pi );
+
+        Notification notif = base.build();
 
         startForeground( 5252, notif );
 
