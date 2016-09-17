@@ -1,24 +1,17 @@
 package com.sensei.jukebox;
 
-import android.app.ActivityManager;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Icon;
 import android.media.MediaPlayer;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -39,7 +32,6 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
     private TextView timeLeft;
     private TextView timePassed;
 
-    private Bitmap songImage;
     private boolean wasRunning = false;
 
     private PlayerService service;
@@ -131,33 +123,18 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
         artist.setText( song.getArtist() );
         genre.setText( song.getGenre() );
 
+        Bitmap songImage;
         if( song.getAlbumArt() == null ) {
             songImage = BitmapFactory.decodeResource( this.getResources(), R.drawable.no_album_art_icon );
         }
         else {
             songImage = BitmapFactory.decodeByteArray(song.getAlbumArt(), 0, song.getAlbumArt().length);
         }
-        artwork.setImageBitmap( songImage );
+        artwork.setImageBitmap(songImage);
 
         seekBar = (SeekBar)findViewById( R.id.seekBar );
         timeLeft = (TextView)findViewById( R.id.time_left );
         timePassed = (TextView)findViewById( R.id.time_passed );
-    }
-
-    private void displayNotification() {
-        Uri alarm = RingtoneManager.getDefaultUri( RingtoneManager.TYPE_NOTIFICATION );
-
-        Notification notification = new Notification.Builder( this )
-                .setSmallIcon( R.mipmap.ic_launcher )
-                .setLargeIcon( songImage )
-                .setContentTitle( song.toString() )
-                .setAutoCancel( true )
-                .setPriority( Notification.PRIORITY_MAX )
-                .setContentText( song.getArtist() )
-                .build();
-
-        NotificationManager manager = (NotificationManager) getSystemService( Context.NOTIFICATION_SERVICE );
-        manager.notify( 5252, notification );
     }
 
     private void retrieveIntent() {

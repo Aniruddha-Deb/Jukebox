@@ -2,11 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout"
     android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:padding="10dp">
 
     <TextView
+        android:textColor="@android:color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -16,81 +17,78 @@
         android:lines="1"/>
 
     <TextView
+        android:textColor="@android:color/black"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textSize="12sp"
         android:id="@+id/notif_artist"
         android:layout_gravity="center"/>
-<!--
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="10dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
+        android:orientation="horizontal">
 
-        <ImageButton
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/previous"
             android:layout_weight="0.5"
             android:scaleX="0.5"
             android:scaleY="0.5"
+            android:id="@+id/previous"
             android:background="@android:color/transparent"
-            android:contentDescription="@string/previous_description"
-            android:onClick="previousSong"/>
+            android:contentDescription="@string/previous_description"/>
 
-        <ImageButton
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/rewind"
             android:layout_weight="0.5"
             android:scaleX="0.5"
             android:scaleY="0.5"
+            android:id="@+id/rewind"
             android:background="@android:color/transparent"
-            android:contentDescription="@string/rewind_description"
-            android:onClick="rewind"/>
+            android:contentDescription="@string/rewind_description"/>
 
-        <ImageButton
+        <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:src="@drawable/pause"
             android:scaleX="0.75"
             android:scaleY="0.75"
             android:layout_weight="2"
             android:tag="false"
+            android:id="@+id/pp"
             android:background="@android:color/transparent"
-            android:contentDescription="@string/pause_description"
-            android:onClick="pause"/>
+            android:contentDescription="@string/pause_description"/>
 
-        <ImageButton
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/fast_forward"
             android:layout_weight="0.5"
             android:scaleX="0.5"
             android:scaleY="0.5"
+            android:id="@+id/ff"
             android:background="@android:color/transparent"
-            android:contentDescription="@string/fast_forward_description"
-            android:onClick="fastForward"/>
+            android:contentDescription="@string/fast_forward_description"/>
 
-        <ImageButton
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/next"
             android:scaleX="0.5"
             android:scaleY="0.5"
+            android:id="@+id/next"
             android:layout_weight="0.5"
             android:background="@android:color/transparent"
-            android:contentDescription="@string/next_description"
-            android:onClick="nextSong"/>
+            android:contentDescription="@string/next_description"/>
 
     </LinearLayout>
 
+    <!--
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="horizontal"
@@ -120,6 +118,6 @@
             android:text="@string/time_value"/>
 
     </LinearLayout>
--->
+    -->
 
 </LinearLayout>

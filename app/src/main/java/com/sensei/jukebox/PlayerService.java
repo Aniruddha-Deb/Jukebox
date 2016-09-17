@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
@@ -72,20 +73,28 @@ public class PlayerService extends Service {
 
     private void showNotification() {
         RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.notification_layout);
+        contentView.setTextColor( R.id.notif_title, Color.BLACK );
         contentView.setTextViewText(R.id.notif_title, song.toString() );
+        contentView.setTextColor( R.id.notif_artist, Color.BLACK );
         contentView.setTextViewText(R.id.notif_artist, song.getArtist() );
+
+        contentView.setImageViewResource( R.id.previous, R.drawable.previous );
+        contentView.setImageViewResource( R.id.rewind, R.drawable.rewind );
+        contentView.setImageViewResource( R.id.pp, R.drawable.pause );
+        contentView.setImageViewResource( R.id.ff, R.drawable.fast_forward );
+        contentView.setImageViewResource( R.id.next, R.drawable.next );
 
         Intent notificationIntent = new Intent(this, PlayerActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
         Notification notification = new Notification.Builder( this )
+                .setContentTitle( "hello" )
                 .setSmallIcon( R.mipmap.ic_launcher )
-                .setContentIntent(contentIntent)
                 .setContent( contentView )
-                .setDefaults( Notification.FLAG_AUTO_CANCEL )
-                .setDefaults( Notification.DEFAULT_VIBRATE )
-                .setDefaults( Notification.DEFAULT_SOUND )
+                .setContentIntent(contentIntent)
                 .build();
+
+        notification.bigContentView = contentView;
 
         startForeground( 5252, notification );
     }
