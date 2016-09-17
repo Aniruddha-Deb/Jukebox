@@ -1,6 +1,7 @@
 package com.sensei.jukebox;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.app.TaskStackBuilder;
@@ -70,42 +71,23 @@ public class PlayerService extends Service {
     }
 
     private void showNotification() {
-        Bitmap bm;
-        if( song.getAlbumArt() == null ) {
-            bm = BitmapFactory.decodeResource( getResources(), R.drawable.no_album_art_icon );
-        }
-        else {
-            bm = BitmapFactory.decodeByteArray( song.getAlbumArt(), 0, song.getAlbumArt().length );
-        }
+        RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.notification_layout);
+        contentView.setTextViewText(R.id.notif_title, song.toString() );
+        contentView.setTextViewText(R.id.notif_artist, song.getArtist() );
 
-        TaskStackBuilder builder = TaskStackBuilder.create( this );
-        builder.addParentStack( PlayerActivity.class );
-        RemoteViews notifView = new RemoteViews( getApplicationContext().getPackageName(), R.layout.notification_layout );
+        Intent notificationIntent = new Intent(this, PlayerActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-        notifView.setTextViewText( R.id.notif_title, song.toString() );
-        notifView.setTextViewText( R.id.notif_artist, song.getArtist() );
-
-        Intent notifIntent = new Intent( this, PlayerActivity.class );
-        notifIntent.putExtra( Constants.BUNDLE, Song.bundleSong( song, song.getPosition() ) );
-        notifIntent.putExtra( Constants.IS_RUNNING, true );
-
-        builder.addNextIntent( notifIntent );
-        PendingIntent pi = builder.getPendingIntent( 0, PendingIntent.FLAG_UPDATE_CURRENT );
-
-        NotificationCompat.Builder base = new NotificationCompat.Builder(getApplicationContext())
+        Notification notification = new Notification.Builder( this )
                 .setSmallIcon( R.mipmap.ic_launcher )
-                .setContentTitle( song.toString() )
-                .setContentText( song.getArtist() )
-                .setLargeIcon( Bitmap.createScaledBitmap( bm, 64, 64, false ) )
-                .setAutoCancel( true )
-                .setPriority( Notification.PRIORITY_MAX )
-                //.setContent( notifView ) god knows why this is not working
-                .setContentIntent( pi );
+                .setContentIntent(contentIntent)
+                .setContent( contentView )
+                .setDefaults( Notification.FLAG_AUTO_CANCEL )
+                .setDefaults( Notification.DEFAULT_VIBRATE )
+                .setDefaults( Notification.DEFAULT_SOUND )
+                .build();
 
-        Notification notif = base.build();
-
-        startForeground( 5252, notif );
-
+        startForeground( 5252, notification );
     }
 
     public void pause() {
