@@ -10,14 +10,19 @@ import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
+import android.renderscript.RenderScript;
 import android.support.v4.app.NotificationCompat;
+import android.util.DisplayMetrics;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.sensei.jukebox.tools.ImageBlur;
 import com.sensei.jukebox.tools.Song;
 
 public class PlayerService extends Service {
@@ -72,29 +77,43 @@ public class PlayerService extends Service {
     }
 
     private void showNotification() {
-        RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.notification_layout);
-        contentView.setTextColor( R.id.notif_title, Color.BLACK );
-        contentView.setTextViewText(R.id.notif_title, song.toString() );
-        contentView.setTextColor( R.id.notif_artist, Color.BLACK );
-        contentView.setTextViewText(R.id.notif_artist, song.getArtist() );
+        Bitmap bm;
+        if( song.getAlbumArt() == null ) {
+            bm = BitmapFactory.decodeResource( getResources(), R.drawable.no_album_art_icon );
+        }
+        else {
+            bm = BitmapFactory.decodeByteArray( song.getAlbumArt(), 0, song.getAlbumArt().length );
+        }
 
-        contentView.setImageViewResource( R.id.previous, R.drawable.previous );
-        contentView.setImageViewResource( R.id.rewind, R.drawable.rewind );
-        contentView.setImageViewResource( R.id.pp, R.drawable.pause );
-        contentView.setImageViewResource( R.id.ff, R.drawable.fast_forward );
-        contentView.setImageViewResource( R.id.next, R.drawable.next );
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+
+        Bitmap backgroundBitmap = Bitmap.createScaledBitmap(bm, 1500, 1500, false);
+        backgroundBitmap = Bitmap.createBitmap( backgroundBitmap, 0, 650, 1500, 200 );
+
+        backgroundBitmap = ImageBlur.blur( this, backgroundBitmap );
+
+        RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.notification_layout);
+        contentView.setTextViewText( R.id.notif_title, song.toString() );
+        contentView.setTextViewText( R.id.notif_artist, song.getArtist() );
+        contentView.setImageViewBitmap( R.id.imageView, backgroundBitmap );
+
+        TaskStackBuilder builder = TaskStackBuilder.create( this );
+        builder.addParentStack( PlayerActivity.class );
 
         Intent notificationIntent = new Intent(this, PlayerActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        notificationIntent.putExtra( Constants.BUNDLE, Song.bundleSong( song, song.getPosition() ) );
+        notificationIntent.putExtra( Constants.IS_RUNNING, true );
+        builder.addNextIntent( notificationIntent );
+        PendingIntent contentIntent = builder.getPendingIntent( 0, PendingIntent.FLAG_UPDATE_CURRENT );
 
         Notification notification = new Notification.Builder( this )
-                .setContentTitle( "hello" )
                 .setSmallIcon( R.mipmap.ic_launcher )
+//                .setLargeIcon( bm )
                 .setContent( contentView )
+//                .setContentTitle( song.toString() )
+//                .setContentText( song.getArtist() )
                 .setContentIntent(contentIntent)
                 .build();
-
-        notification.bigContentView = contentView;
 
         startForeground( 5252, notification );
     }
