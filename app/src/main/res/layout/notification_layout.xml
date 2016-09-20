@@ -7,16 +7,8 @@
 
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="250dp"
+        android:layout_height="wrap_content"
         android:id="@+id/imageView"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"/>
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="250dp"
-        android:src="@drawable/bump"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"/>
@@ -44,76 +36,82 @@
         android:layout_alignParentEnd="true"
         android:paddingBottom="10dp"/>
 
-    <!--
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:id="@+id/controlPanel"
+            android:layout_below="@id/notif_artist">
 
-            <ImageView
+            <ImageButton
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
-                android:src="@drawable/previous"
-                android:layout_weight="0.5"
+                android:src="@drawable/previous_white"
                 android:scaleX="0.5"
                 android:scaleY="0.5"
+                android:layout_weight="0.5"
                 android:id="@+id/previous"
+                android:onClick="previousSong"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/previous_description"/>
 
-            <ImageView
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/rewind"
+                android:src="@drawable/rewind_white"
                 android:layout_weight="0.5"
                 android:scaleX="0.5"
                 android:scaleY="0.5"
                 android:id="@+id/rewind"
+                android:onClick="rewind"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/rewind_description"/>
 
-            <ImageView
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/pause"
-                android:scaleX="0.75"
-                android:scaleY="0.75"
+                android:src="@drawable/pause_white"
                 android:layout_weight="2"
                 android:tag="false"
+                android:scaleX="0.75"
+                android:scaleY="0.75"
                 android:id="@+id/pp"
+                android:onClick="pause"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/pause_description"/>
 
-            <ImageView
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/fast_forward"
+                android:src="@drawable/fast_forward_white"
                 android:layout_weight="0.5"
                 android:scaleX="0.5"
                 android:scaleY="0.5"
                 android:id="@+id/ff"
                 android:background="@android:color/transparent"
-                android:contentDescription="@string/fast_forward_description"/>
+                android:contentDescription="@string/fast_forward_description"
+                android:onClick="fastForward"/>
 
-            <ImageView
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/next"
+                android:src="@drawable/next_white"
                 android:scaleX="0.5"
                 android:scaleY="0.5"
                 android:id="@+id/next"
                 android:layout_weight="0.5"
                 android:background="@android:color/transparent"
+                android:onClick="nextSong"
                 android:contentDescription="@string/next_description"/>
 
         </LinearLayout>
-        -->
 
-    <!--
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="horizontal"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@id/controlPanel">
 
         <TextView
             android:layout_width="wrap_content"
@@ -122,14 +120,14 @@
             android:layout_gravity="top"
             android:id="@+id/time_passed"
             android:text="@string/time_value"/>
-
+<!--
         <SeekBar
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center|top"
             android:id="@+id/seekBar"/>
-
+-->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -139,6 +137,5 @@
             android:text="@string/time_value"/>
 
     </LinearLayout>
-    -->
 
 </RelativeLayout>

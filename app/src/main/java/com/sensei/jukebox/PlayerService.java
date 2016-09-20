@@ -1,29 +1,20 @@
 package com.sensei.jukebox;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
-import android.renderscript.RenderScript;
-import android.support.v4.app.NotificationCompat;
-import android.util.DisplayMetrics;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import com.sensei.jukebox.tools.ImageBlur;
 import com.sensei.jukebox.tools.Song;
+import com.sensei.jukebox.tools.ViewBuilder;
 
 public class PlayerService extends Service {
 
@@ -64,8 +55,6 @@ public class PlayerService extends Service {
         super.onDestroy();
     }
 
-
-
     @Override
     public IBinder onBind(Intent intent) {
         return playerBinder;
@@ -77,25 +66,8 @@ public class PlayerService extends Service {
     }
 
     private void showNotification() {
-        Bitmap bm;
-        if( song.getAlbumArt() == null ) {
-            bm = BitmapFactory.decodeResource( getResources(), R.drawable.no_album_art_icon );
-        }
-        else {
-            bm = BitmapFactory.decodeByteArray( song.getAlbumArt(), 0, song.getAlbumArt().length );
-        }
 
-        DisplayMetrics dm = getResources().getDisplayMetrics();
-
-        Bitmap backgroundBitmap = Bitmap.createScaledBitmap(bm, 1500, 1500, false);
-        backgroundBitmap = Bitmap.createBitmap( backgroundBitmap, 0, 650, 1500, 200 );
-
-        backgroundBitmap = ImageBlur.blur( this, backgroundBitmap );
-
-        RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.notification_layout);
-        contentView.setTextViewText( R.id.notif_title, song.toString() );
-        contentView.setTextViewText( R.id.notif_artist, song.getArtist() );
-        contentView.setImageViewBitmap( R.id.imageView, backgroundBitmap );
+        RemoteViews contentView = ViewBuilder.buildView( getPackageName(), getResources(), song, this );
 
         TaskStackBuilder builder = TaskStackBuilder.create( this );
         builder.addParentStack( PlayerActivity.class );
@@ -108,12 +80,11 @@ public class PlayerService extends Service {
 
         Notification notification = new Notification.Builder( this )
                 .setSmallIcon( R.mipmap.ic_launcher )
-//                .setLargeIcon( bm )
                 .setContent( contentView )
-//                .setContentTitle( song.toString() )
-//                .setContentText( song.getArtist() )
                 .setContentIntent(contentIntent)
                 .build();
+
+        notification.bigContentView = contentView;
 
         startForeground( 5252, notification );
     }
