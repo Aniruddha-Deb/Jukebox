@@ -13,14 +13,21 @@ Upon clicking a song, it reads and displays the song's tag data and plays the so
 
 ![song_over_the_horizon](/doc/player_activity_slider.png)
 
+It also displays a notification in the notification bar which, upon tapping, takes you to the PlayerActivity
+
+![notif_1](/doc/notif_1.png)
+![notif_2](/doc/notif_2.png)
+
 ## Installation
 
 Download the [build.apk](https://github.com/Aniruddha-Deb/Jukebox/releases/download/v0.0-indev/build.apk) file and install on your android smartphone. After installation, run the app by tapping on it from your desktop. 
 
 ## Bugs
 
-The slider thumb in low-res phones (such as my samsung gt-i9060) is misplaced. This does not occur in hi-res phones (oneplus 2, moto x) and needs to be fixed.
+* The slider thumb in low-res phones (such as my samsung gt-i9060) is misplaced. This does not occur in hi-res phones   (oneplus 2, moto x) and needs to be fixed. 
+* The play/pause button displays the wrong image when the PlayerActivity is accessed by tapping on the service.
+* Code Cleanup needed urgently
 
 ## TODOs
 
-Refine the service by adding a notification to control/stop the service. Also, fix the aforementioned bugs
+Focus on, well, a lot of things. Also, fix the aforementioned bugs
