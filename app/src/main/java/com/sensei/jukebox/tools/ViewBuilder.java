@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.RemoteViews;
 
 import com.sensei.jukebox.R;
@@ -75,6 +76,6 @@ public class ViewBuilder {
         int blueValue = Color.blue( pixel );
         int greenValue = Color.green( pixel );
 
-        return redValue > 200 && greenValue > 200 && blueValue > 200;
+        return redValue > 128 && greenValue > 128 && blueValue > 128;
     }
 }

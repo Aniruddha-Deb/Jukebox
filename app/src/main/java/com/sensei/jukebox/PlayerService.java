@@ -10,6 +10,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -89,19 +90,19 @@ public class PlayerService extends Service {
         startForeground( 5252, notification );
     }
 
-    public void pause() {
+    public void pause( View view ) {
         player.pause();
     }
 
-    public void play() {
+    public void play( View view ) {
         player.start();
     }
 
-    public void fastForward() {
+    public void fastForward( View view ) {
         player.seekTo( player.getCurrentPosition() + 5000 );
     }
 
-    public void rewind() {
+    public void rewind( View view ) {
         player.seekTo( player.getCurrentPosition() - 5000 );
     }
 

@@ -189,14 +189,14 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
         ImageButton b = (ImageButton)view;
 
         if( b.getTag().equals( "false" ) ) {
-            service.pause();
+            service.pause( null );
             b.setTag( "true" );
             b.setImageResource( R.drawable.play );
             b.setScaleX( 0.75f );
             b.setScaleY( 0.75f );
         }
         else {
-            service.play();
+            service.play( null );
             b.setTag( "false" );
             b.setImageResource( R.drawable.pause );
             b.setScaleX( 0.75f );
@@ -205,12 +205,12 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
     }
 
     public void fastForward(View view) {
-        service.fastForward();
+        service.fastForward( null );
         updateUI();
     }
 
     public void rewind(View view) {
-        service.rewind();
+        service.rewind( null );
         updateUI();
     }
 
