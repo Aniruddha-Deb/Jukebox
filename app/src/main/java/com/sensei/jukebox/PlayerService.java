@@ -1,5 +1,6 @@
 package com.sensei.jukebox;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -9,6 +10,7 @@ import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -31,21 +33,39 @@ public class PlayerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        song = Constants.songs.get( intent.getExtras().getInt( Constants.SONG_POSITION ) );
-
-        player = MediaPlayer.create( getApplicationContext(), song.getUri() );
+        // TODO this code not working!!!!!
+/*        boolean intentIsNull = false;
         try {
-            player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            player.start();
-        } catch ( NullPointerException e ) {
-            player = new MediaPlayer();  // to avoid future null pointer exceptions
-            Toast.makeText( getApplicationContext(), "File format not supported", Toast.LENGTH_SHORT ).show();
+            int i = intent.getExtras().getInt( Constants.SONG_POSITION );
+        } catch (Exception e) {
+            intentIsNull = true;
+            e.printStackTrace();
         }
 
-        showNotification();
+            if ( !intentIsNull ) {
+                if (intent.getStringExtra(Constants.PAUSE).equals(Constants.PAUSE)) {
+                    pause(null);
+                } else if (intent.getStringExtra(Constants.FAST_FORWARD).equals(Constants.FAST_FORWARD)) {
+                    fastForward(null);
+                } else if (intent.getStringExtra(Constants.REWIND).equals(Constants.FAST_FORWARD)) {
+                    rewind(null);
+                } else {*/
 
-        return 1;
+                    song = Constants.songs.get(intent.getExtras().getInt(Constants.SONG_POSITION));
+
+                    player = MediaPlayer.create(getApplicationContext(), song.getUri());
+                    try {
+                        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                        player.start();
+                    } catch (NullPointerException e) {
+                        player = new MediaPlayer();  // to avoid future null pointer exceptions
+                        Toast.makeText(getApplicationContext(), "File format not supported", Toast.LENGTH_SHORT).show();
+                    }
+
+                    showNotification();
+                //}
+            //}
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -70,6 +90,18 @@ public class PlayerService extends Service {
 
         RemoteViews contentView = ViewBuilder.buildView( getPackageName(), getResources(), song, this );
 
+        Intent pauseIntent = new Intent( this, PlayerService.class );
+        pauseIntent.putExtra( Constants.PAUSE, Constants.PAUSE );
+        PendingIntent pausePendingIntent = PendingIntent.getActivity( this, 1, pauseIntent, 0 );
+
+        Intent fastForwardIntent = new Intent( this, PlayerService.class );
+        pauseIntent.putExtra( Constants.FAST_FORWARD, Constants.FAST_FORWARD );
+        PendingIntent fastForwardPendingIntent = PendingIntent.getActivity( this, 1, fastForwardIntent, 0 );
+
+        Intent rewindIntent = new Intent( this, PlayerService.class );
+        pauseIntent.putExtra( Constants.REWIND, Constants.REWIND );
+        PendingIntent rewindPendingIntent = PendingIntent.getActivity( this, 1, rewindIntent, 0 );
+
         TaskStackBuilder builder = TaskStackBuilder.create( this );
         builder.addParentStack( PlayerActivity.class );
 
@@ -78,6 +110,10 @@ public class PlayerService extends Service {
         notificationIntent.putExtra( Constants.IS_RUNNING, true );
         builder.addNextIntent( notificationIntent );
         PendingIntent contentIntent = builder.getPendingIntent( 0, PendingIntent.FLAG_UPDATE_CURRENT );
+
+        contentView.setOnClickPendingIntent( R.id.rewind, rewindPendingIntent );
+        contentView.setOnClickPendingIntent( R.id.ff, pausePendingIntent );
+        contentView.setOnClickPendingIntent( R.id.pp, fastForwardPendingIntent );
 
         Notification notification = new Notification.Builder( this )
                 .setSmallIcon( R.mipmap.ic_launcher )

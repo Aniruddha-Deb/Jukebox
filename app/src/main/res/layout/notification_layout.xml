@@ -101,6 +101,7 @@
                 android:contentDescription="@string/next_description"/>
 
         </LinearLayout>
+
 <!--
     <LinearLayout
         android:layout_width="match_parent"

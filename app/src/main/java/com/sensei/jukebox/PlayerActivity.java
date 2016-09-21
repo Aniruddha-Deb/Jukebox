@@ -81,7 +81,6 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
 
             @Override
             public void onServiceDisconnected(ComponentName componentName) {
-                service.onDestroy();
             }
         };
 
@@ -105,6 +104,7 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
 
     @Override
     protected void onDestroy() {
+        unbindService( connection );
         super.onDestroy();
     }
 

@@ -13,6 +13,10 @@ public class Constants {
     public static final String SONG_POSITION = "position";
     public static final String IS_RUNNING    = "is it running?";
 
+    public static final String PAUSE = "pause";
+    public static final String FAST_FORWARD = "fast forward";
+    public static final String REWIND = "rewind";
+
     public static ArrayList<Song> songs = new ArrayList<>();
 
 }
