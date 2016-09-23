@@ -1,0 +1,9 @@
+<root>
+    <item name='android.app.Notification bigContentView'>
+        <annotation name='java.lang.annotation.Deprecated' />
+    </item>
+    <item
+        name='android.app.Notification.Builder android.app.Notification.Builder setContent(android.widget.RemoteViews)'>
+      <annotation name='java.lang.annotation.Deprecated' />
+    </item>
+</root>

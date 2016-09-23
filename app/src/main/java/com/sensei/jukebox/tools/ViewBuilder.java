@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.RemoteViews;
 
 import com.sensei.jukebox.R;

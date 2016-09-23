@@ -1,6 +1,5 @@
 package com.sensei.jukebox;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -10,9 +9,7 @@ import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
-import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -44,11 +41,11 @@ public class PlayerService extends Service {
 
             if ( !intentIsNull ) {
                 if (intent.getStringExtra(Constants.PAUSE).equals(Constants.PAUSE)) {
-                    pause(null);
+                    pause();
                 } else if (intent.getStringExtra(Constants.FAST_FORWARD).equals(Constants.FAST_FORWARD)) {
-                    fastForward(null);
+                    fastForward();
                 } else if (intent.getStringExtra(Constants.REWIND).equals(Constants.FAST_FORWARD)) {
-                    rewind(null);
+                    rewind();
                 } else {*/
 
                     song = Constants.songs.get(intent.getExtras().getInt(Constants.SONG_POSITION));
@@ -115,30 +112,32 @@ public class PlayerService extends Service {
         contentView.setOnClickPendingIntent( R.id.ff, pausePendingIntent );
         contentView.setOnClickPendingIntent( R.id.pp, fastForwardPendingIntent );
 
+        //noinspection deprecation
         Notification notification = new Notification.Builder( this )
                 .setSmallIcon( R.mipmap.ic_launcher )
                 .setContent( contentView )
                 .setContentIntent(contentIntent)
                 .build();
 
+        //noinspection deprecation
         notification.bigContentView = contentView;
 
         startForeground( 5252, notification );
     }
 
-    public void pause( View view ) {
+    public void pause() {
         player.pause();
     }
 
-    public void play( View view ) {
+    public void play() {
         player.start();
     }
 
-    public void fastForward( View view ) {
+    public void fastForward() {
         player.seekTo( player.getCurrentPosition() + 5000 );
     }
 
-    public void rewind( View view ) {
+    public void rewind() {
         player.seekTo( player.getCurrentPosition() - 5000 );
     }
 
