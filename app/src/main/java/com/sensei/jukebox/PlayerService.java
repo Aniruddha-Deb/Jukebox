@@ -10,6 +10,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -30,38 +31,32 @@ public class PlayerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // TODO this code not working!!!!!
-/*        boolean intentIsNull = false;
-        try {
-            int i = intent.getExtras().getInt( Constants.SONG_POSITION );
-        } catch (Exception e) {
-            intentIsNull = true;
-            e.printStackTrace();
+
+        Log.d( "PlayerService", "Got an intent." ) ;
+
+        if( intent.getStringExtra(Constants.PAUSE) != null ) {
+            pause();
         }
+        else if ( intent.getStringExtra(Constants.FAST_FORWARD) != null ) {
+            fastForward();
+        }
+        else if ( intent.getStringExtra(Constants.REWIND) != null ) {
+            rewind();
+        }
+        else {
+            song = Constants.songs.get(intent.getExtras().getInt(Constants.SONG_POSITION));
+            player = MediaPlayer.create(getApplicationContext(), song.getUri());
 
-            if ( !intentIsNull ) {
-                if (intent.getStringExtra(Constants.PAUSE).equals(Constants.PAUSE)) {
-                    pause();
-                } else if (intent.getStringExtra(Constants.FAST_FORWARD).equals(Constants.FAST_FORWARD)) {
-                    fastForward();
-                } else if (intent.getStringExtra(Constants.REWIND).equals(Constants.FAST_FORWARD)) {
-                    rewind();
-                } else {*/
-
-                    song = Constants.songs.get(intent.getExtras().getInt(Constants.SONG_POSITION));
-
-                    player = MediaPlayer.create(getApplicationContext(), song.getUri());
-                    try {
-                        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                        player.start();
-                    } catch (NullPointerException e) {
-                        player = new MediaPlayer();  // to avoid future null pointer exceptions
-                        Toast.makeText(getApplicationContext(), "File format not supported", Toast.LENGTH_SHORT).show();
-                    }
-
-                    showNotification();
-                //}
-            //}
+            try {
+                player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                player.start();
+            }
+            catch (NullPointerException e) {
+                player = new MediaPlayer();  // to avoid future null pointer exceptions
+                Toast.makeText(getApplicationContext(), "File format not supported", Toast.LENGTH_SHORT).show();
+            }
+            showNotification();
+        }
         return START_NOT_STICKY;
     }
 
