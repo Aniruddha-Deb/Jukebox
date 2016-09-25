@@ -16,6 +16,9 @@ public class Constants {
     public static final String PAUSE = "pause";
     public static final String FAST_FORWARD = "fast forward";
     public static final String REWIND = "rewind";
+    public static final String CLOSE = "close";
+    public static final String NEXT_SONG = "next_song";
+    public static final String PREVIOUS_SONG = "previous_song";
 
     public static ArrayList<Song> songs = new ArrayList<>();
 

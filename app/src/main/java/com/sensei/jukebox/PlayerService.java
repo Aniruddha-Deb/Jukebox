@@ -34,14 +34,28 @@ public class PlayerService extends Service {
 
         Log.d( "PlayerService", "Got an intent." ) ;
 
-        if( intent.getStringExtra(Constants.PAUSE) != null ) {
+        String command = intent.getAction();
+        if( command == null ) {
+            command = "";
+        }
+
+        if( command.equals( Constants.PAUSE ) ) {
             pause();
         }
-        else if ( intent.getStringExtra(Constants.FAST_FORWARD) != null ) {
+        else if ( command.equals( Constants.FAST_FORWARD ) ) {
             fastForward();
         }
-        else if ( intent.getStringExtra(Constants.REWIND) != null ) {
+        else if ( command.equals( Constants.REWIND ) ) {
             rewind();
+        }
+        else if( command.equals( Constants.CLOSE ) ) {
+            this.onDestroy();
+        }
+        else if( command.equals( Constants.NEXT_SONG ) ) {
+            nextSong();
+        }
+        else if( command.equals( Constants.PREVIOUS_SONG ) ) {
+            previousSong();
         }
         else {
             song = Constants.songs.get(intent.getExtras().getInt(Constants.SONG_POSITION));
@@ -82,17 +96,23 @@ public class PlayerService extends Service {
 
         RemoteViews contentView = ViewBuilder.buildView( getPackageName(), getResources(), song, this );
 
-        Intent pauseIntent = new Intent( this, PlayerService.class );
-        pauseIntent.putExtra( Constants.PAUSE, Constants.PAUSE );
-        PendingIntent pausePendingIntent = PendingIntent.getActivity( this, 1, pauseIntent, 0 );
+        Intent pauseIntent = new Intent( this, PlayerService.class ).setAction( Constants.PAUSE );
+        PendingIntent pausePendingIntent = PendingIntent.getService( this, 0, pauseIntent, PendingIntent.FLAG_CANCEL_CURRENT );
 
-        Intent fastForwardIntent = new Intent( this, PlayerService.class );
-        pauseIntent.putExtra( Constants.FAST_FORWARD, Constants.FAST_FORWARD );
-        PendingIntent fastForwardPendingIntent = PendingIntent.getActivity( this, 1, fastForwardIntent, 0 );
+        Intent fastForwardIntent = new Intent( this, PlayerService.class ).setAction( Constants.FAST_FORWARD );
+        PendingIntent fastForwardPendingIntent = PendingIntent.getService( this, 0, fastForwardIntent, PendingIntent.FLAG_CANCEL_CURRENT );
 
-        Intent rewindIntent = new Intent( this, PlayerService.class );
-        pauseIntent.putExtra( Constants.REWIND, Constants.REWIND );
-        PendingIntent rewindPendingIntent = PendingIntent.getActivity( this, 1, rewindIntent, 0 );
+        Intent rewindIntent = new Intent( this, PlayerService.class ).setAction( Constants.REWIND );
+        PendingIntent rewindPendingIntent = PendingIntent.getService( this, 0, rewindIntent, PendingIntent.FLAG_CANCEL_CURRENT );
+
+        Intent closeIntent = new Intent( this, PlayerService.class ).setAction( Constants.CLOSE );
+        PendingIntent closePendingIntent = PendingIntent.getService( this, 0, closeIntent, PendingIntent.FLAG_CANCEL_CURRENT );
+
+        Intent nextSongIntent = new Intent( this, PlayerService.class ).setAction( Constants.NEXT_SONG );
+        PendingIntent nextSongPendingIntent = PendingIntent.getService( this, 0, nextSongIntent, PendingIntent.FLAG_CANCEL_CURRENT );
+
+        Intent previousSongIntent = new Intent( this, PlayerService.class ).setAction( Constants.PREVIOUS_SONG );
+        PendingIntent previousSongPendingIntent = PendingIntent.getService( this, 0, previousSongIntent, PendingIntent.FLAG_CANCEL_CURRENT );
 
         TaskStackBuilder builder = TaskStackBuilder.create( this );
         builder.addParentStack( PlayerActivity.class );
@@ -104,8 +124,11 @@ public class PlayerService extends Service {
         PendingIntent contentIntent = builder.getPendingIntent( 0, PendingIntent.FLAG_UPDATE_CURRENT );
 
         contentView.setOnClickPendingIntent( R.id.rewind, rewindPendingIntent );
-        contentView.setOnClickPendingIntent( R.id.ff, pausePendingIntent );
-        contentView.setOnClickPendingIntent( R.id.pp, fastForwardPendingIntent );
+        contentView.setOnClickPendingIntent( R.id.ff, fastForwardPendingIntent );
+        contentView.setOnClickPendingIntent( R.id.pp, pausePendingIntent );
+        contentView.setOnClickPendingIntent( R.id.close, closePendingIntent );
+        contentView.setOnClickPendingIntent( R.id.next, nextSongPendingIntent );
+        contentView.setOnClickPendingIntent( R.id.previous, previousSongPendingIntent );
 
         //noinspection deprecation
         Notification notification = new Notification.Builder( this )
@@ -121,7 +144,12 @@ public class PlayerService extends Service {
     }
 
     public void pause() {
-        player.pause();
+        if( player.isPlaying() ) {
+            player.pause();
+        }
+        else {
+            player.start();
+        }
     }
 
     public void play() {
@@ -134,6 +162,36 @@ public class PlayerService extends Service {
 
     public void rewind() {
         player.seekTo( player.getCurrentPosition() - 5000 );
+    }
+
+    public void nextSong() {
+        if( song.getPosition() + 1 >= Constants.songs.size() ) {
+            Toast.makeText( this, "No next song available", Toast.LENGTH_SHORT ).show();
+        }
+        else {
+            Intent intent = new Intent( this, PlayerService.class );
+            intent.putExtra( Constants.SONG_POSITION, song.getPosition() + 1 );
+
+            this.onDestroy();
+            this.onCreate();
+            startService( intent );
+        }
+
+    }
+
+    public void previousSong() {
+        if( song.getPosition() - 1 < 0 ) {
+            Toast.makeText( this, "No previous song available", Toast.LENGTH_SHORT ).show();
+        }
+        else {
+            Intent intent = new Intent( this, PlayerService.class );
+            intent.putExtra( Constants.SONG_POSITION, song.getPosition() - 1 );
+
+            this.onDestroy();
+            this.onCreate();
+            startService( intent );
+        }
+
     }
 
     public MediaPlayer getPlayer() {
