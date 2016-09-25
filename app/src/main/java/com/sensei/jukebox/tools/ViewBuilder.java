@@ -14,15 +14,16 @@ public class ViewBuilder {
 
     static Song song;
     static Context ctx;
+    public static boolean textColorIsBlack;
 
-    public static RemoteViews buildView(String packageName, Resources res, Song song, Context ctx) {
+    public static RemoteViews buildView(String packageName, Resources res, Song song, Context ctx ) {
 
         ViewBuilder.song = song;
         ViewBuilder.ctx = ctx;
         Bitmap baseBitmap = parseBitmap( res );
 
         Bitmap backgroundImage = processBitmap( baseBitmap );
-        boolean textColorIsBlack = checkTextColor( backgroundImage );
+        textColorIsBlack = checkTextColor( backgroundImage );
         String songTitle = song.toString();
         String songArtist = song.getArtist();
 

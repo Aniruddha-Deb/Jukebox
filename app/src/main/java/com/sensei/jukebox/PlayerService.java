@@ -17,12 +17,17 @@ import android.widget.Toast;
 import com.sensei.jukebox.tools.Song;
 import com.sensei.jukebox.tools.ViewBuilder;
 
+@SuppressWarnings( "deprecation" )
 public class PlayerService extends Service {
 
     private MediaPlayer player;
     private final IBinder playerBinder = new PlayerBinder();
 
     private Song song;
+
+    private RemoteViews contentView = null;
+    private Notification notification = null;
+    private boolean textColorIsBlack;
 
     @Override
     public void onCreate() {
@@ -39,38 +44,38 @@ public class PlayerService extends Service {
             command = "";
         }
 
-        if( command.equals( Constants.PAUSE ) ) {
-            pause();
-        }
-        else if ( command.equals( Constants.FAST_FORWARD ) ) {
-            fastForward();
-        }
-        else if ( command.equals( Constants.REWIND ) ) {
-            rewind();
-        }
-        else if( command.equals( Constants.CLOSE ) ) {
-            this.onDestroy();
-        }
-        else if( command.equals( Constants.NEXT_SONG ) ) {
-            nextSong();
-        }
-        else if( command.equals( Constants.PREVIOUS_SONG ) ) {
-            previousSong();
-        }
-        else {
-            song = Constants.songs.get(intent.getExtras().getInt(Constants.SONG_POSITION));
-            player = MediaPlayer.create(getApplicationContext(), song.getUri());
+        switch (command) {
 
-            try {
-                player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                player.start();
-            }
-            catch (NullPointerException e) {
-                player = new MediaPlayer();  // to avoid future null pointer exceptions
-                Toast.makeText(getApplicationContext(), "File format not supported", Toast.LENGTH_SHORT).show();
-            }
-            showNotification();
+            case Constants.PAUSE:
+                pause();
+                break;
+
+            case Constants.FAST_FORWARD:
+                fastForward();
+                break;
+
+            case Constants.REWIND:
+                rewind();
+                break;
+
+            case Constants.CLOSE:
+                this.onDestroy();
+                break;
+
+            case Constants.NEXT_SONG:
+                nextSong();
+                break;
+
+            case Constants.PREVIOUS_SONG:
+                previousSong();
+                break;
+
+            default:
+                setUpPlayer( intent.getExtras().getInt( Constants.SONG_POSITION ) );
+                showNotification();
+                break;
         }
+
         return START_NOT_STICKY;
     }
 
@@ -94,7 +99,8 @@ public class PlayerService extends Service {
 
     private void showNotification() {
 
-        RemoteViews contentView = ViewBuilder.buildView( getPackageName(), getResources(), song, this );
+        contentView = ViewBuilder.buildView( getPackageName(), getResources(), song, this );
+        textColorIsBlack = ViewBuilder.textColorIsBlack;
 
         Intent pauseIntent = new Intent( this, PlayerService.class ).setAction( Constants.PAUSE );
         PendingIntent pausePendingIntent = PendingIntent.getService( this, 0, pauseIntent, PendingIntent.FLAG_CANCEL_CURRENT );
@@ -130,14 +136,12 @@ public class PlayerService extends Service {
         contentView.setOnClickPendingIntent( R.id.next, nextSongPendingIntent );
         contentView.setOnClickPendingIntent( R.id.previous, previousSongPendingIntent );
 
-        //noinspection deprecation
-        Notification notification = new Notification.Builder( this )
+        notification = new Notification.Builder( this )
                 .setSmallIcon( R.mipmap.ic_launcher )
                 .setContent( contentView )
                 .setContentIntent(contentIntent)
                 .build();
 
-        //noinspection deprecation
         notification.bigContentView = contentView;
 
         startForeground( 5252, notification );
@@ -146,9 +150,47 @@ public class PlayerService extends Service {
     public void pause() {
         if( player.isPlaying() ) {
             player.pause();
+            setButtonResource( "play" );
+            notification.bigContentView = contentView;
+            startForeground( 5252, notification );
         }
         else {
             player.start();
+            setButtonResource( "pause" );
+            notification.bigContentView = contentView;
+            startForeground( 5252, notification );
+        }
+    }
+
+    private void setButtonResource( String buttonImage ) {
+        if( buttonImage.equals( "play" ) ) {
+            if ( textColorIsBlack ) {
+                contentView.setInt( R.id.pp, "setImageResource", R.drawable.play );
+            }
+            else {
+                contentView.setInt( R.id.pp, "setImageResource", R.drawable.play_white );
+            }
+        }
+        else {
+            if( textColorIsBlack ) {
+                contentView.setInt( R.id.pp, "setImageResource", R.drawable.pause );
+            }
+            else {
+                contentView.setInt( R.id.pp, "setImageResource", R.drawable.pause_white );
+            }
+        }
+    }
+
+    public void setUpPlayer( int songPosition ) {
+        song = Constants.songs.get( songPosition );
+        player = MediaPlayer.create(getApplicationContext(), song.getUri());
+
+        try {
+            player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            player.start();
+        } catch (NullPointerException e) {
+            player = new MediaPlayer();  // to avoid future null pointer exceptions
+            Toast.makeText(getApplicationContext(), "File format not supported", Toast.LENGTH_SHORT).show();
         }
     }
 
