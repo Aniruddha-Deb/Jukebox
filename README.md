@@ -26,7 +26,7 @@ Download the [build.apk](https://github.com/Aniruddha-Deb/Jukebox/releases/downl
 
 * The slider thumb in low-res phones (such as my samsung gt-i9060) is misplaced. This does not occur in hi-res phones   (oneplus 2, moto x) and needs to be fixed. 
 * The play/pause button displays the wrong image when the PlayerActivity is accessed by tapping on the service.
-* Code Cleanup needed urgently
+* The notification play/pause buttons are not sending the PendingIntents to the service to play or pause the MediaPlayer.
 
 ## TODOs
 
