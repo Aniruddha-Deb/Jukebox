@@ -9,13 +9,17 @@ import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.sensei.jukebox.tools.Song;
 import com.sensei.jukebox.tools.ViewBuilder;
+
+import java.util.Locale;
 
 @SuppressWarnings( "deprecation" )
 public class PlayerService extends Service {
@@ -73,10 +77,53 @@ public class PlayerService extends Service {
             default:
                 setUpPlayer( intent.getExtras().getInt( Constants.SONG_POSITION ) );
                 showNotification();
+                updateNotification();
                 break;
         }
 
         return START_NOT_STICKY;
+    }
+
+    private void updateNotification() {
+
+        contentView.setProgressBar( R.id.notif_seekBar, player.getDuration()/1000, 0, false );
+
+        new Thread(
+            new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        while( player.isPlaying() ) {
+                            updateUI();
+                            Thread.sleep(1000);
+                        }
+                    } catch (Exception e) {
+                        // swallow exception
+                    }
+                }
+            }
+        ).start();
+    }
+
+    private void updateUI() {
+        int timePassedInSeconds = player.getCurrentPosition() / 1000;
+        int timeLeftInSeconds = player.getDuration() / 1000 - player.getCurrentPosition() / 1000;
+
+        contentView.setProgressBar( R.id.notif_seekBar, player.getDuration()/1000, timePassedInSeconds, false );
+
+        int minutes = (timePassedInSeconds % 3600) / 60;
+        int seconds = timePassedInSeconds % 60;
+
+        String $timePassed = String.format(Locale.ENGLISH, "%02d:%02d", minutes, seconds);
+        contentView.setTextViewText( R.id.notif_time_passed, $timePassed );
+
+        minutes = (timeLeftInSeconds % 3600) / 60;
+        seconds = timeLeftInSeconds % 60;
+
+        String $timeLeft = String.format(Locale.ENGLISH, "%02d:%02d", minutes, seconds);
+        contentView.setTextViewText( R.id.notif_time_left, $timeLeft );
+        notification.bigContentView = contentView;
+        startForeground( 5252, notification );
     }
 
     @Override
@@ -135,11 +182,11 @@ public class PlayerService extends Service {
         contentView.setOnClickPendingIntent( R.id.close, closePendingIntent );
         contentView.setOnClickPendingIntent( R.id.next, nextSongPendingIntent );
         contentView.setOnClickPendingIntent( R.id.previous, previousSongPendingIntent );
+        contentView.setOnClickPendingIntent( R.id.back_to_activity, contentIntent );
 
         notification = new Notification.Builder( this )
                 .setSmallIcon( R.mipmap.ic_launcher )
                 .setContent( contentView )
-                .setContentIntent(contentIntent)
                 .build();
 
         notification.bigContentView = contentView;
@@ -200,10 +247,12 @@ public class PlayerService extends Service {
 
     public void fastForward() {
         player.seekTo( player.getCurrentPosition() + 5000 );
+        updateUI();
     }
 
     public void rewind() {
         player.seekTo( player.getCurrentPosition() - 5000 );
+        updateUI();
     }
 
     public void nextSong() {

@@ -23,7 +23,7 @@ public class ViewBuilder {
         Bitmap baseBitmap = parseBitmap( res );
 
         Bitmap backgroundImage = processBitmap( baseBitmap );
-        textColorIsBlack = checkTextColor( backgroundImage );
+        textColorIsBlack = false;
         String songTitle = song.toString();
         String songArtist = song.getArtist();
 
@@ -31,6 +31,7 @@ public class ViewBuilder {
 
         rv.setTextViewText(R.id.notif_title, songTitle);
         rv.setTextViewText(R.id.notif_artist, songArtist);
+        rv.setProgressBar( R.id.notif_seekBar, 1000, 10, false );
 
         if( textColorIsBlack ) {
             rv.setInt( R.id.notif_title, "setTextColor", Color.BLACK );
@@ -51,7 +52,8 @@ public class ViewBuilder {
     private static Bitmap parseBitmap( Resources res ) {
         Bitmap bm;
         if( song.getAlbumArt() == null ) {
-            bm = BitmapFactory.decodeResource( res, R.drawable.no_album_art_icon );
+            bm = Bitmap.createBitmap( 150, 150, Bitmap.Config.ARGB_8888 );
+            bm.eraseColor( Color.BLACK );
             Log.d( "ViewBuilder", "decoded from system image" );
         }
         else {

@@ -15,11 +15,23 @@
         android:layout_alignParentStart="true"/>
 
     <ImageButton
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_alignParentEnd="true"
+        android:scaleX="0.5"
+        android:scaleY="0.5"
         android:id="@+id/close"
-        android:src="@android:drawable/ic_delete"
+        android:src="@drawable/close_white"
+        android:background="@android:color/transparent"/>
+
+    <ImageButton
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:scaleX="0.5"
+        android:scaleY="0.5"
+        android:id="@+id/back_to_activity"
+        android:src="@drawable/back_to_activity_white"
         android:background="@android:color/transparent"/>
 
     <TextView
@@ -43,19 +55,19 @@
         android:layout_gravity="center"
         android:layout_below="@+id/notif_title"
         android:layout_alignParentEnd="true"
-        android:paddingBottom="10dp"/>
+        android:paddingBottom="5dp"/>
 
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:orientation="horizontal"
             android:id="@+id/controlPanel"
             android:layout_below="@id/notif_artist">
 
             <ImageButton
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:src="@drawable/previous_white"
                 android:scaleX="0.5"
                 android:scaleY="0.5"
@@ -65,8 +77,8 @@
                 android:contentDescription="@string/previous_description"/>
 
             <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:src="@drawable/rewind_white"
                 android:layout_weight="0.5"
                 android:scaleX="0.5"
@@ -76,8 +88,8 @@
                 android:contentDescription="@string/rewind_description"/>
 
             <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:src="@drawable/pause_white"
                 android:layout_weight="2"
                 android:tag="false"
@@ -88,8 +100,8 @@
                 android:contentDescription="@string/pause_description"/>
 
             <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:src="@drawable/fast_forward_white"
                 android:layout_weight="0.5"
                 android:scaleX="0.5"
@@ -99,8 +111,8 @@
                 android:contentDescription="@string/fast_forward_description"/>
 
             <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:src="@drawable/next_white"
                 android:scaleX="0.5"
                 android:scaleY="0.5"
@@ -111,7 +123,7 @@
 
         </LinearLayout>
 
-<!--
+
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="horizontal"
@@ -122,26 +134,30 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
+            android:textColor="@android:color/white"
             android:layout_gravity="top"
-            android:id="@+id/time_passed"
-            android:text="@string/time_value"/>
+            android:paddingRight="2dp"
+            android:id="@+id/notif_time_passed"/>
 
-        <SeekBar
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="2dp"
             android:layout_weight="1"
-            android:layout_gravity="center|top"
-            android:id="@+id/notif_seekBar"/>
+            android:layout_gravity="center_vertical"
+            android:id="@+id/notif_seekBar"
+            android:progressDrawable="@drawable/progress_drawable_white"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
+            android:textColor="@android:color/white"
+            android:paddingRight="2dp"
             android:layout_gravity="top"
-            android:id="@+id/time_left"
-            android:text="@string/time_value"/>
+            android:id="@+id/notif_time_left"/>
 
     </LinearLayout>
--->
+
 
 </RelativeLayout>
