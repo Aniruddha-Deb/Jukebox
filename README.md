@@ -15,8 +15,8 @@ Upon clicking a song, it reads and displays the song's tag data and plays the so
 
 It also displays a notification in the notification bar which, upon tapping, takes you to the PlayerActivity
 
-![notif_1](/doc/notif_1.png)
-![notif_2](/doc/notif_2.png)
+![notif_1](/doc/notif_improved_1.png)
+![notif_2](/doc/notif_improved_2.png)
 
 ## Installation
 
@@ -26,8 +26,8 @@ Download the [build.apk](https://github.com/Aniruddha-Deb/Jukebox/releases/downl
 
 * The slider thumb in low-res phones (such as my samsung gt-i9060) is misplaced. This does not occur in hi-res phones   (oneplus 2, moto x) and needs to be fixed. 
 * The play/pause button displays the wrong image when the PlayerActivity is accessed by tapping on the service.
-* The notification play/pause buttons are not sending the PendingIntents to the service to play or pause the MediaPlayer.
+* The close button has a bug which prevents relaunching of the activity.
 
 ## TODOs
 
-Focus on, well, a lot of things. Also, fix the aforementioned bugs
+Create a progressBar and time displays in the notification which show how far the song has progressed. Also create good black and white 'close' and 'back to activity' buttons.
