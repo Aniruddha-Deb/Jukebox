@@ -109,7 +109,8 @@
             android:scaleX="0.75"
             android:scaleY="0.90"
             android:layout_weight="2"
-            android:tag="false"
+            android:tag="playerIsPlaying"
+            android:id="@+id/playPause"
             android:background="@android:color/transparent"
             android:contentDescription="@string/pause_description"
             android:onClick="pause"/>

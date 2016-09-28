@@ -132,6 +132,16 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
         }
         artwork.setImageBitmap(songImage);
 
+        if( player.isPlaying() ) {
+            ImageButton playPlause = (ImageButton)findViewById(R.id.playPause);
+            playPlause.setImageResource( R.drawable.pause );
+            playPlause.setTag( "playerIsPlaying" );
+        }
+        else {
+            ImageButton playPlause = (ImageButton)findViewById(R.id.playPause);
+            playPlause.setImageResource( R.drawable.play );
+            playPlause.setTag( "playerIsPaused" );
+        }
         seekBar = (SeekBar)findViewById( R.id.seekBar );
         timeLeft = (TextView)findViewById( R.id.time_left );
         timePassed = (TextView)findViewById( R.id.time_passed );
@@ -188,19 +198,15 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
     public void pause(View view) {
         ImageButton b = (ImageButton)view;
 
-        if( b.getTag().equals( "false" ) ) {
+        if( b.getTag().equals( "playerIsPlaying" ) ) {
             service.pause();
-            b.setTag( "true" );
+            b.setTag( "playerIsPaused" );
             b.setImageResource( R.drawable.play );
-            b.setScaleX( 0.75f );
-            b.setScaleY( 0.75f );
         }
         else {
             service.play();
-            b.setTag( "false" );
+            b.setTag( "playerIsPlaying" );
             b.setImageResource( R.drawable.pause );
-            b.setScaleX( 0.75f );
-            b.setScaleY( 0.75f );
         }
     }
 
