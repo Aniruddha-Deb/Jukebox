@@ -25,9 +25,10 @@ Download the [build.apk](https://github.com/Aniruddha-Deb/Jukebox/releases/downl
 ## Bugs
 
 * The slider thumb in low-res phones (such as my samsung gt-i9060) is misplaced. This does not occur in hi-res phones   (oneplus 2, moto x) and needs to be fixed. 
-* The play/pause button displays the wrong image when the PlayerActivity is accessed by tapping on the service.
 * The close button has a bug which prevents relaunching of the activity.
 
 ## TODOs
 
-Create a progressBar and time displays in the notification which show how far the song has progressed. Also create good black and white 'close' and 'back to activity' buttons.
+* Refactor the code and incorporate some flexibility in the UI designs. 
+* Improve the UI (cardView for the startup listSongsActivity etc)
+* Start building databases and base user suggestions upon the data in the databases.
