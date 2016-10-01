@@ -11,6 +11,7 @@ import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Process;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.SeekBar;
@@ -207,6 +208,7 @@ public class PlayerService extends Service {
             notification.bigContentView = contentView;
             startForeground( 5252, notification );
         }
+        updateNotification();
     }
 
     private void setButtonResource( String buttonImage ) {
@@ -243,6 +245,7 @@ public class PlayerService extends Service {
 
     public void play() {
         player.start();
+        updateNotification();
     }
 
     public void fastForward() {
