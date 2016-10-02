@@ -9,15 +9,13 @@ import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Process;
 import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.sensei.jukebox.tools.Song;
+import com.sensei.jukebox.tools.SongList;
 import com.sensei.jukebox.tools.ViewBuilder;
 
 import java.util.Locale;
@@ -172,7 +170,7 @@ public class PlayerService extends Service {
         builder.addParentStack( PlayerActivity.class );
 
         Intent notificationIntent = new Intent(this, PlayerActivity.class);
-        notificationIntent.putExtra( Constants.BUNDLE, Song.bundleSong( song, song.getPosition() ) );
+        notificationIntent.putExtra( Constants.SONG_URI, song.getUri() );
         notificationIntent.putExtra( Constants.IS_RUNNING, true );
         builder.addNextIntent( notificationIntent );
         PendingIntent contentIntent = builder.getPendingIntent( 0, PendingIntent.FLAG_UPDATE_CURRENT );
@@ -231,7 +229,7 @@ public class PlayerService extends Service {
     }
 
     public void setUpPlayer( int songPosition ) {
-        song = Constants.songs.get( songPosition );
+        song = SongList.getSong( songPosition );
         player = MediaPlayer.create(getApplicationContext(), song.getUri());
 
         try {
@@ -259,7 +257,7 @@ public class PlayerService extends Service {
     }
 
     public void nextSong() {
-        if( song.getPosition() + 1 >= Constants.songs.size() ) {
+        if( song.getPosition() + 1 >= SongList.getSize() ) {
             Toast.makeText( this, "No next song available", Toast.LENGTH_SHORT ).show();
         }
         else {

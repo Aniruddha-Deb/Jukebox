@@ -9,11 +9,13 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
 import com.sensei.jukebox.tools.Song;
 import com.sensei.jukebox.tools.SongAdapter;
+import com.sensei.jukebox.tools.SongList;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,53 +24,34 @@ import java.util.Comparator;
 public class ListSongsActivity extends ListActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
-        Constants.songs = getSongs();
-        sortSongs();
-        SongAdapter adapter = new SongAdapter( this, Constants.songs );
+        Log.d( "l", "started ListSongsActivity" );
+        setListViewAdapter();
+    }
+
+    private void setListViewAdapter() {
+        SongAdapter adapter = new SongAdapter( this );
         getListView().setAdapter( adapter );
     }
 
     @Override
-    public void onListItemClick(ListView listView,
-                                View itemView,
-                                int position,
-                                long id) {
-        Song song = Constants.songs.get( position );
+    public void onListItemClick(ListView listView, View itemView,
+                                int position, long id) {
+        startPlayerActivity( position );
+    }
+
+    private void startPlayerActivity( int songPosition ) {
+        // To be replaced by database
+        Song song = SongList.getSong( songPosition );
+
         if( serviceIsRunning() ) {
             stopService( new Intent( this, PlayerService.class ) );
         }
 
         Intent intent = new Intent( this, PlayerActivity.class );
-        intent.putExtra( Constants.BUNDLE, Song.bundleSong( song, position ) );
+        intent.putExtra( Constants.SONG_POSITION, songPosition );
         startActivity( intent );
-    }
-
-    private ArrayList<Song> getSongs() {
-        ArrayList<Song> songs = new ArrayList<>();
-
-        ContentResolver resolver = getContentResolver();
-        Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor cursor = resolver.query( musicUri, null, null, null, null );
-
-        if( cursor != null && cursor.moveToFirst() ) {
-            int idColumn = cursor.getColumnIndex( MediaStore.Audio.Media._ID );
-            int titleColumn = cursor.getColumnIndex( MediaStore.Audio.Media.TITLE );
-
-            while( cursor.moveToNext() ) {
-                long id = cursor.getLong( idColumn );
-                String title = cursor.getString( titleColumn );
-
-                songs.add( new Song( id, this, title ) );
-            }
-        }
-
-        if (cursor != null) {
-            cursor.close();
-        }
-
-        return songs;
     }
 
     private boolean serviceIsRunning() {
@@ -81,15 +64,4 @@ public class ListSongsActivity extends ListActivity {
         return false;
     }
 
-    private void sortSongs() {
-        Collections.sort(Constants.songs, new Comparator<Song>() {
-            @Override
-            public int compare(Song a, Song b) {
-                return a.toString().compareTo(b.toString());
-            }
-        });
-        for( int i=0; i<Constants.songs.size(); i++ ) {
-            Constants.songs.get(i).setPosition( i );
-        }
-    }
 }

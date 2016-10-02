@@ -24,8 +24,8 @@ public class ViewBuilder {
 
         Bitmap backgroundImage = processBitmap( baseBitmap );
         textColorIsBlack = false;
-        String songTitle = song.toString();
-        String songArtist = song.getArtist();
+        String songTitle = song.getSongData().getTitle();
+        String songArtist = song.getSongData().getArtist();
 
         RemoteViews rv = new RemoteViews( packageName, R.layout.notification_layout );
 
@@ -51,13 +51,13 @@ public class ViewBuilder {
 
     private static Bitmap parseBitmap( Resources res ) {
         Bitmap bm;
-        if( song.getAlbumArt() == null ) {
+        if( song.getSongData().getAlbumArt() == null ) {
             bm = Bitmap.createBitmap( 150, 150, Bitmap.Config.ARGB_8888 );
             bm.eraseColor( Color.BLACK );
             Log.d( "ViewBuilder", "decoded from system image" );
         }
         else {
-            bm = BitmapFactory.decodeByteArray( song.getAlbumArt(), 0, song.getAlbumArt().length );
+            bm = BitmapFactory.decodeByteArray( song.getSongData().getAlbumArt(), 0, song.getSongData().getAlbumArt().length );
             Log.d( "ViewBuilder", "decoded from byte array" );
         }
         return bm;

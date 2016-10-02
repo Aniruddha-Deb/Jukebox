@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sensei.jukebox.tools.Song;
+import com.sensei.jukebox.tools.SongList;
 
 import java.util.Locale;
 
@@ -35,65 +37,13 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
     private boolean wasRunning = false;
 
     private PlayerService service;
-    private ServiceConnection connection = null ;
-
-    public PlayerActivity() {
-        Log.d( "PlayerActivity", "New instance of Activity created" );
-    }
-
-    private void connectToService( int songPosition ) {
-        Intent intent = new Intent( this, PlayerService.class );
-        intent.putExtra( Constants.SONG_POSITION, songPosition );
-
-        if( wasRunning ) {
-            Log.d( "PlayerActivity", "service already running, binding to it" );
-            bindService( intent, connection, Context.BIND_AUTO_CREATE );
-            Log.d( "PlayerActivity", "connectToService bound to service" );
-        }
-        else {
-            startService(intent);
-            Log.d("PlayerActivity", "connectToService started service");
-            bindService(intent, connection, Context.BIND_AUTO_CREATE);
-            Log.d("PlayerActivity", "connectToService bound to service");
-        }
-    }
+    private ServiceConnection connection = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d( "PlayerActivity", "onCreate called" );
         super.onCreate(savedInstanceState);
-
-        this.connection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                PlayerService.PlayerBinder binder = (PlayerService.PlayerBinder) iBinder;
-                service = binder.getService();
-                Log.d( "PlayerActivity", "srvConn got service" );
-                player = service.getPlayer();
-
-                setUpUI();
-                Log.d( "PlayerActivity", "srvConn set up UI" );
-                updateUIComponents();
-                Log.d( "PlayerActivity", "srvConn updated UI components" );
-                //displayNotification();
-                Log.d( "PlayerActivity", "srvConn created notification" );
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName componentName) {
-            }
-        };
-
-        if( savedInstanceState == null ) {
-            Log.d( "PlayerActivity", "onCreate found no song passed on, playing selected song" );
-            retrieveIntent();
-        }
-        else {
-            Log.d( "PlayerActivity", "onCreate retrieved song" );
-            song = Constants.songs.get( savedInstanceState.getInt( Constants.SONG_POSITION ) );
-            wasRunning = false;
-        }
-        Log.d( "PlayerActivity", "onCreate connecting to service" );
+        setUpServiceConnection();
+        checkForPreviousInstance( savedInstanceState );
         connectToService( song.getPosition() );
     }
 
@@ -108,6 +58,59 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
         super.onDestroy();
     }
 
+    //-------------------------------- Connection helper methods -----------------------------------
+
+    private void setUpServiceConnection() {
+        this.connection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                PlayerService.PlayerBinder binder = (PlayerService.PlayerBinder) iBinder;
+                service = binder.getService();
+                player = service.getPlayer();
+
+                setUpUI();
+                updateUIComponents();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                // nothing as of now
+            }
+
+        };
+    }
+
+    private void checkForPreviousInstance( Bundle savedInstanceState ) {
+        if( savedInstanceState == null ) {
+            retrieveIntent();
+        }
+        else {
+            song = SongList.getSong( savedInstanceState.getInt( Constants.SONG_POSITION ) );
+            wasRunning = false;
+        }
+    }
+
+    private void retrieveIntent() {
+        Intent intent = getIntent();
+        song = SongList.getSong( intent.getExtras().getInt( Constants.SONG_POSITION ) );
+        wasRunning = intent.getBooleanExtra( Constants.IS_RUNNING, false );
+    }
+
+    private void connectToService( int songPosition ) {
+        Intent intent = new Intent( this, PlayerService.class );
+        intent.putExtra( Constants.SONG_POSITION, songPosition );
+
+        if( wasRunning ) {
+            bindService( intent, connection, Context.BIND_AUTO_CREATE );
+        }
+        else {
+            startService(intent);
+            bindService(intent, connection, Context.BIND_AUTO_CREATE);
+        }
+    }
+
+    //-------------------------------- UI setup methods --------------------------------------------
+
     public void setUpUI() {
 
         setContentView(R.layout.activity_player);
@@ -118,39 +121,32 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
         TextView artist = (TextView)findViewById( R.id.artist );
         TextView genre = (TextView)findViewById( R.id.genre );
 
-        album.setText ( song.getAlbum() );
-        title.setText ( song.toString() );
-        artist.setText( song.getArtist() );
-        genre.setText( song.getGenre() );
+        album.setText ( song.getSongData().getAlbum() );
+        title.setText ( song.getSongData().getTitle() );
+        artist.setText( song.getSongData().getArtist() );
+        genre.setText( song.getSongData().getGenre() );
 
-        Bitmap songImage;
-        if( song.getAlbumArt() == null ) {
-            songImage = BitmapFactory.decodeResource( this.getResources(), R.drawable.no_album_art_icon );
+        if( song.getSongData().getAlbumArt() == null ) {
+            artwork.setImageResource( R.drawable.no_album_art_icon );
         }
         else {
-            songImage = BitmapFactory.decodeByteArray(song.getAlbumArt(), 0, song.getAlbumArt().length);
+            Bitmap songImage = BitmapFactory.decodeByteArray(song.getSongData().getAlbumArt(), 0,
+                song.getSongData().getAlbumArt().length);
+            artwork.setImageBitmap(songImage);
         }
-        artwork.setImageBitmap(songImage);
+
+        ImageButton playPlause = (ImageButton)findViewById(R.id.playPause);
 
         if( player.isPlaying() ) {
-            ImageButton playPlause = (ImageButton)findViewById(R.id.playPause);
             playPlause.setImageResource( R.drawable.pause );
-            playPlause.setTag( "playerIsPlaying" );
         }
         else {
-            ImageButton playPlause = (ImageButton)findViewById(R.id.playPause);
             playPlause.setImageResource( R.drawable.play );
-            playPlause.setTag( "playerIsPaused" );
         }
+
         seekBar = (SeekBar)findViewById( R.id.seekBar );
         timeLeft = (TextView)findViewById( R.id.time_left );
         timePassed = (TextView)findViewById( R.id.time_passed );
-    }
-
-    private void retrieveIntent() {
-        Intent intent = getIntent();
-        song = Song.unwrapSong( intent.getBundleExtra(Constants.BUNDLE), this );
-        wasRunning = intent.getBooleanExtra( Constants.IS_RUNNING, false );
     }
 
     private void updateUIComponents() {
@@ -195,6 +191,8 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
         timeLeft.setText($timeLeft);
     }
 
+    //-------------------------------- Listener methods --------------------------------------------
+
     public void pause(View view) {
         ImageButton b = (ImageButton)view;
 
@@ -222,7 +220,7 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
 
     public void nextSong(View view) {
 
-        if( song.getPosition() + 1 >= Constants.songs.size() ) {
+        if( song.getPosition() + 1 >= SongList.getSize() ) {
             Toast.makeText( this, "No next song available", Toast.LENGTH_SHORT ).show();
         }
         else {
