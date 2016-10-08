@@ -7,12 +7,10 @@ import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -64,11 +62,12 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
         this.connection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                setUpUI();
+
                 PlayerService.PlayerBinder binder = (PlayerService.PlayerBinder) iBinder;
                 service = binder.getService();
                 player = service.getPlayer();
 
-                setUpUI();
                 updateUIComponents();
             }
 
@@ -109,6 +108,13 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
         }
     }
 
+    private void goToSong( int songPosition ) {
+        this.song = SongList.getSong( songPosition );
+        unbindService( connection );
+        service.onDestroy();
+        connectToService( song.getPosition() );
+    }
+
     //-------------------------------- UI setup methods --------------------------------------------
 
     public void setUpUI() {
@@ -135,6 +141,13 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
             artwork.setImageBitmap(songImage);
         }
 
+        seekBar = (SeekBar)findViewById( R.id.seekBar );
+        timeLeft = (TextView)findViewById( R.id.time_left );
+        timePassed = (TextView)findViewById( R.id.time_passed );
+    }
+
+    private void updateUIComponents() {
+
         ImageButton playPlause = (ImageButton)findViewById(R.id.playPause);
 
         if( player.isPlaying() ) {
@@ -144,31 +157,21 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
             playPlause.setImageResource( R.drawable.play );
         }
 
-        seekBar = (SeekBar)findViewById( R.id.seekBar );
-        timeLeft = (TextView)findViewById( R.id.time_left );
-        timePassed = (TextView)findViewById( R.id.time_passed );
-    }
+        seekBar.setMax(player.getDuration() / 1000);
+        seekBar.setOnSeekBarChangeListener(this);
 
-    private void updateUIComponents() {
-        player = service.getPlayer();
-        if( player != null ) {
-
-            seekBar.setMax(player.getDuration() / 1000);
-            seekBar.setOnSeekBarChangeListener(this);
-
-            final Handler handler = new Handler();
-            PlayerActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        updateUI();
-                    } catch (IllegalStateException e) {
-                        // swallow exception
-                    }
-                    handler.postDelayed(this, 1000);
+        final Handler handler = new Handler();
+        PlayerActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    updateUI();
+                } catch (IllegalStateException e) {
+                    // swallow exception
                 }
-            });
-        }
+                handler.postDelayed(this, 1000);
+            }
+        });
     }
 
     private void updateUI() {
@@ -196,14 +199,12 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
     public void pause(View view) {
         ImageButton b = (ImageButton)view;
 
-        if( b.getTag().equals( "playerIsPlaying" ) ) {
-            service.pause();
-            b.setTag( "playerIsPaused" );
+        if( player.isPlaying() ) {
+            service.pausePlay();
             b.setImageResource( R.drawable.play );
         }
         else {
-            service.play();
-            b.setTag( "playerIsPlaying" );
+            service.pausePlay();
             b.setImageResource( R.drawable.pause );
         }
     }
@@ -224,14 +225,7 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
             Toast.makeText( this, "No next song available", Toast.LENGTH_SHORT ).show();
         }
         else {
-            service.onDestroy();
-            this.onStop();
-            this.onDestroy();
-
-            Bundle b = new Bundle();
-            b.putInt(Constants.SONG_POSITION, song.getPosition() + 1);
-            Log.d( "PlayerActivity", "Found next song, recreating activity" );
-            this.onCreate(b);
+            goToSong( song.getPosition() + 1 );
         }
     }
 
@@ -241,14 +235,7 @@ public class PlayerActivity extends AppCompatActivity implements SeekBar.OnSeekB
             Toast.makeText( this, "No previous song available", Toast.LENGTH_SHORT ).show();
         }
         else {
-            service.onDestroy();
-            this.onStop();
-            this.onDestroy();
-
-            Bundle b = new Bundle();
-            b.putInt(Constants.SONG_POSITION, song.getPosition() - 1);
-            Log.d( "PlayerActivity", "Found previous song, recreating activity" );
-            this.onCreate(b);
+            goToSong( song.getPosition() - 1 );
         }
     }
 

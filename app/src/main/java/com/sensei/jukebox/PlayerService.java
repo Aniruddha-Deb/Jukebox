@@ -1,9 +1,11 @@
 package com.sensei.jukebox;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.app.TaskStackBuilder;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.media.AudioManager;
@@ -30,11 +32,14 @@ public class PlayerService extends Service {
 
     private RemoteViews contentView = null;
     private Notification notification = null;
-    private boolean textColorIsBlack;
+
+    private NotificationManager manager = null;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        manager = (NotificationManager)getApplicationContext()
+                .getSystemService(Context.NOTIFICATION_SERVICE );
     }
 
     @Override
@@ -50,7 +55,7 @@ public class PlayerService extends Service {
         switch (command) {
 
             case Constants.PAUSE:
-                pause();
+                pausePlay();
                 break;
 
             case Constants.FAST_FORWARD:
@@ -92,9 +97,11 @@ public class PlayerService extends Service {
                 @Override
                 public void run() {
                     try {
-                        while( player.isPlaying() ) {
-                            updateUI();
-                            Thread.sleep(1000);
+                        while( player != null ) {
+                            if( player.isPlaying() ) {
+                                updateUI();
+                                Thread.sleep(1000);
+                            }
                         }
                     } catch (Exception e) {
                         // swallow exception
@@ -122,7 +129,7 @@ public class PlayerService extends Service {
         String $timeLeft = String.format(Locale.ENGLISH, "%02d:%02d", minutes, seconds);
         contentView.setTextViewText( R.id.notif_time_left, $timeLeft );
         notification.bigContentView = contentView;
-        startForeground( 5252, notification );
+        manager.notify( 5252, notification );
     }
 
     @Override
@@ -145,8 +152,7 @@ public class PlayerService extends Service {
 
     private void showNotification() {
 
-        contentView = ViewBuilder.buildView( getPackageName(), getResources(), song, this );
-        textColorIsBlack = ViewBuilder.textColorIsBlack;
+        contentView = ViewBuilder.buildView( getPackageName(), song );
 
         Intent pauseIntent = new Intent( this, PlayerService.class ).setAction( Constants.PAUSE );
         PendingIntent pausePendingIntent = PendingIntent.getService( this, 0, pauseIntent, PendingIntent.FLAG_CANCEL_CURRENT );
@@ -170,7 +176,7 @@ public class PlayerService extends Service {
         builder.addParentStack( PlayerActivity.class );
 
         Intent notificationIntent = new Intent(this, PlayerActivity.class);
-        notificationIntent.putExtra( Constants.SONG_URI, song.getUri() );
+        notificationIntent.putExtra( Constants.SONG_POSITION, song.getPosition() );
         notificationIntent.putExtra( Constants.IS_RUNNING, true );
         builder.addNextIntent( notificationIntent );
         PendingIntent contentIntent = builder.getPendingIntent( 0, PendingIntent.FLAG_UPDATE_CURRENT );
@@ -185,7 +191,6 @@ public class PlayerService extends Service {
 
         notification = new Notification.Builder( this )
                 .setSmallIcon( R.mipmap.ic_launcher )
-                .setContent( contentView )
                 .build();
 
         notification.bigContentView = contentView;
@@ -193,39 +198,26 @@ public class PlayerService extends Service {
         startForeground( 5252, notification );
     }
 
-    public void pause() {
+    public void pausePlay() {
         if( player.isPlaying() ) {
             player.pause();
             setButtonResource( "play" );
-            notification.bigContentView = contentView;
-            startForeground( 5252, notification );
         }
         else {
             player.start();
             setButtonResource( "pause" );
-            notification.bigContentView = contentView;
-            startForeground( 5252, notification );
         }
-        updateNotification();
     }
 
     private void setButtonResource( String buttonImage ) {
         if( buttonImage.equals( "play" ) ) {
-            if ( textColorIsBlack ) {
-                contentView.setInt( R.id.pp, "setImageResource", R.drawable.play );
-            }
-            else {
-                contentView.setInt( R.id.pp, "setImageResource", R.drawable.play_white );
-            }
+            contentView.setInt( R.id.pp, "setImageResource", R.drawable.play_white );
         }
         else {
-            if( textColorIsBlack ) {
-                contentView.setInt( R.id.pp, "setImageResource", R.drawable.pause );
-            }
-            else {
-                contentView.setInt( R.id.pp, "setImageResource", R.drawable.pause_white );
-            }
+            contentView.setInt( R.id.pp, "setImageResource", R.drawable.pause_white );
         }
+        notification.bigContentView = contentView;
+        manager.notify( 5252, notification );
     }
 
     public void setUpPlayer( int songPosition ) {
@@ -239,11 +231,6 @@ public class PlayerService extends Service {
             player = new MediaPlayer();  // to avoid future null pointer exceptions
             Toast.makeText(getApplicationContext(), "File format not supported", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    public void play() {
-        player.start();
-        updateNotification();
     }
 
     public void fastForward() {

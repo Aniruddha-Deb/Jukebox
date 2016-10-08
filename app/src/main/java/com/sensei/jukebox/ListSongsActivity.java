@@ -2,24 +2,14 @@ package com.sensei.jukebox;
 
 import android.app.ActivityManager;
 import android.app.ListActivity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
-import com.sensei.jukebox.tools.Song;
 import com.sensei.jukebox.tools.SongAdapter;
-import com.sensei.jukebox.tools.SongList;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class ListSongsActivity extends ListActivity {
 
@@ -42,9 +32,6 @@ public class ListSongsActivity extends ListActivity {
     }
 
     private void startPlayerActivity( int songPosition ) {
-        // To be replaced by database
-        Song song = SongList.getSong( songPosition );
-
         if( serviceIsRunning() ) {
             stopService( new Intent( this, PlayerService.class ) );
         }

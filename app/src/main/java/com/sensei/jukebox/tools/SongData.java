@@ -1,14 +1,9 @@
 package com.sensei.jukebox.tools;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 
 import com.sensei.jukebox.Constants;
-import com.sensei.jukebox.R;
-
-import java.nio.ByteBuffer;
 
 public class SongData {
 
@@ -66,13 +61,7 @@ public class SongData {
     }
 
     private void setNoAlbumArtIcon() {
-        Bitmap bm = BitmapFactory.decodeResource( Constants.APPLICATION_CONTEXT.getResources(),
-                R.drawable.no_album_art_icon );
-        int bitmapSize = bm.getByteCount();
-        ByteBuffer bf = ByteBuffer.allocate( bitmapSize );
-
-        bm.copyPixelsToBuffer( bf );
-        albumArt = null;
+        albumArt = null; // TDO
     }
 
     public String getTitle() {

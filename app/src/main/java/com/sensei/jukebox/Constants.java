@@ -1,21 +1,9 @@
 package com.sensei.jukebox;
 
-import android.app.Activity;
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
-
-import com.sensei.jukebox.tools.Song;
-
-import java.util.ArrayList;
 
 public class Constants {
 
-    public static final String BUNDLE = "song_bundle";
-
-    public static final String SONG_URI = "song_uri";
-
-    public static final String SONG_TITLE    = "title";
-    public static final String SONG_ID       = "id";
     public static final String SONG_POSITION = "position";
     public static final String IS_RUNNING    = "is it running?";
 
