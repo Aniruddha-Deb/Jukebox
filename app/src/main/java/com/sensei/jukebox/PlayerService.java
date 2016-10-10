@@ -190,7 +190,7 @@ public class PlayerService extends Service {
         contentView.setOnClickPendingIntent( R.id.back_to_activity, contentIntent );
 
         notification = new Notification.Builder( this )
-                .setSmallIcon( R.mipmap.ic_launcher )
+                .setSmallIcon( R.drawable.notification_icon )
                 .build();
 
         notification.bigContentView = contentView;

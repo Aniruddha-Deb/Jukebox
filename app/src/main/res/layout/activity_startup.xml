@@ -11,9 +11,9 @@
 
     <ImageView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="200dp"
         android:layout_gravity="center"
         android:layout_weight="1"
-        android:src="@mipmap/ic_launcher"/>
+        android:src="@mipmap/jukebox_launcher"/>
 
 </LinearLayout>
